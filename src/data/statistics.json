@@ -1,0 +1,64 @@
+{
+  "statistics": {
+    "total_tests_completed": 0,
+    "most_common_types": [
+      { "type": "INFP", "percentage": 12.5, "count": 0 },
+      { "type": "ENFP", "percentage": 11.8, "count": 0 },
+      { "type": "INTJ", "percentage": 10.2, "count": 0 },
+      { "type": "INFJ", "percentage": 9.7, "count": 0 },
+      { "type": "ENTP", "percentage": 8.9, "count": 0 }
+    ],
+    "type_distribution": {
+      "INTJ": 0, "INTP": 0, "ENTJ": 0, "ENTP": 0,
+      "INFJ": 0, "INFP": 0, "ENFJ": 0, "ENFP": 0,
+      "ISTJ": 0, "ISFJ": 0, "ESTJ": 0, "ESFJ": 0,
+      "ISTP": 0, "ISFP": 0, "ESTP": 0, "ESFP": 0
+    },
+    "dimension_averages": {
+      "E_vs_I": { "E": 45, "I": 55 },
+      "S_vs_N": { "S": 40, "N": 60 },
+      "T_vs_F": { "T": 48, "F": 52 },
+      "J_vs_P": { "J": 47, "P": 53 }
+    }
+  },
+  "user_feedback": [
+    {
+      "id": 1,
+      "rating": 5,
+      "comment": "너무 재미있고 정확해요!",
+      "type": "ENFP",
+      "date": "2025-01-10"
+    },
+    {
+      "id": 2,
+      "rating": 5,
+      "comment": "디자인이 너무 귀여워요 💕",
+      "type": "INFP",
+      "date": "2025-01-12"
+    },
+    {
+      "id": 3,
+      "rating": 4,
+      "comment": "결과가 생각보다 정확하네요",
+      "type": "INTJ",
+      "date": "2025-01-13"
+    }
+  ],
+  "popular_combinations": [
+    {
+      "types": ["ENFP", "INTJ"],
+      "compatibility_score": 95,
+      "description": "가장 이상적인 궁합"
+    },
+    {
+      "types": ["INFP", "ENFJ"],
+      "compatibility_score": 92,
+      "description": "서로를 이해하는 관계"
+    },
+    {
+      "types": ["ENTP", "INFJ"],
+      "compatibility_score": 90,
+      "description": "지적 교감이 높은 조합"
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-11-05",
+  "images": {
+    "characters": {
+      "INTJ": {
+        "type": "svg",
+        "color": "#6B46C1",
+        "emoji": "🧙‍♂️",
+        "description": "전략가 캐릭터"
+      },
+      "INTP": {
+        "type": "svg",
+        "color": "#4299E1",
+        "emoji": "🔬",
+        "description": "논리술사 캐릭터"
+      },
+      "ENTJ": {
+        "type": "svg",
+        "color": "#D53F8C",
+        "emoji": "👑",
+        "description": "통솔자 캐릭터"
+      },
+      "ENTP": {
+        "type": "svg",
+        "color": "#ED8936",
+        "emoji": "🎭",
+        "description": "변론가 캐릭터"
+      },
+      "INFJ": {
+        "type": "svg",
+        "color": "#38B2AC",
+        "emoji": "🦄",
+        "description": "옹호자 캐릭터"
+      },
+      "INFP": {
+        "type": "svg",
+        "color": "#F687B3",
+        "emoji": "🌈",
+        "description": "중재자 캐릭터"
+      },
+      "ENFJ": {
+        "type": "svg",
+        "color": "#48BB78",
+        "emoji": "✨",
+        "description": "선도자 캐릭터"
+      },
+      "ENFP": {
+        "type": "svg",
+        "color": "#F6AD55",
+        "emoji": "🎪",
+        "description": "활동가 캐릭터"
+      },
+      "ISTJ": {
+        "type": "svg",
+        "color": "#2C5282",
+        "emoji": "📊",
+        "description": "현실주의자 캐릭터"
+      },
+      "ISFJ": {
+        "type": "svg",
+        "color": "#5A67D8",
+        "emoji": "🛡️",
+        "description": "수호자 캐릭터"
+      },
+      "ESTJ": {
+        "type": "svg",
+        "color": "#C05621",
+        "emoji": "📈",
+        "description": "경영자 캐릭터"
+      },
+      "ESFJ": {
+        "type": "svg",
+        "color": "#DD6B20",
+        "emoji": "🤝",
+        "description": "집정관 캐릭터"
+      },
+      "ISTP": {
+        "type": "svg",
+        "color": "#2D3748",
+        "emoji": "🔧",
+        "description": "장인 캐릭터"
+      },
+      "ISFP": {
+        "type": "svg",
+        "color": "#9F7AEA",
+        "emoji": "🎨",
+        "description": "모험가 캐릭터"
+      },
+      "ESTP": {
+        "type": "svg",
+        "color": "#E53E3E",
+        "emoji": "⚡",
+        "description": "사업가 캐릭터"
+      },
+      "ESFP": {
+        "type": "svg",
+        "color": "#F56565",
+        "emoji": "🎉",
+        "description": "연예인 캐릭터"
+      }
+    }
+  },
+  "notes": "모든 캐릭터는 SVG 형식으로 동적 생성됩니다. characterGenerator.ts 유틸리티를 사용하세요."
+}

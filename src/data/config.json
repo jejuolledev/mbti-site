@@ -1,0 +1,57 @@
+{
+  "analytics": {
+    "enabled": false,
+    "google_analytics_id": "G-XXXXXXXXXX",
+    "facebook_pixel_id": "",
+    "tracking_events": [
+      "test_start",
+      "test_complete",
+      "result_share",
+      "result_download"
+    ]
+  },
+  "features": {
+    "share_to_social": true,
+    "download_result_image": true,
+    "result_comparison": false,
+    "email_results": false,
+    "save_history": false
+  },
+  "ui_config": {
+    "theme": "cute",
+    "animation_speed": "normal",
+    "show_progress_bar": true,
+    "enable_confetti": true,
+    "enable_sound_effects": false
+  },
+  "test_config": {
+    "total_questions": 12,
+    "randomize_options": false,
+    "allow_skip": false,
+    "show_question_numbers": true,
+    "allow_previous": true
+  },
+  "result_config": {
+    "show_detailed_analysis": true,
+    "show_compatibility": true,
+    "show_strengths_weaknesses": true,
+    "show_characteristics": true,
+    "enable_comparison_tool": false
+  },
+  "social_share": {
+    "facebook": true,
+    "twitter": true,
+    "instagram": false,
+    "kakao": true,
+    "line": false,
+    "copy_link": true
+  },
+  "meta": {
+    "site_name": "귀여운 MBTI 테스트",
+    "site_description": "나의 성격 유형을 재미있게 알아보세요!",
+    "site_keywords": ["MBTI", "성격테스트", "심리테스트", "성격유형", "무료테스트"],
+    "author": "MBTI Team",
+    "version": "1.0.0",
+    "last_updated": "2025-01-15"
+  }
+}

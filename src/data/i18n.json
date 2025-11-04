@@ -1,0 +1,75 @@
+{
+  "locales": {
+    "ko": {
+      "name": "한국어",
+      "enabled": true,
+      "default": true
+    },
+    "en": {
+      "name": "English",
+      "enabled": false,
+      "default": false
+    },
+    "ja": {
+      "name": "日本語",
+      "enabled": false,
+      "default": false
+    }
+  },
+  "translations": {
+    "ko": {
+      "common": {
+        "start": "시작하기",
+        "next": "다음",
+        "previous": "이전",
+        "complete": "완료",
+        "share": "공유하기",
+        "download": "다운로드",
+        "restart": "다시하기"
+      },
+      "home": {
+        "title": "귀여운 MBTI 테스트",
+        "subtitle": "나의 성격 유형을 재미있게 알아보세요!",
+        "cta": "테스트 시작하기"
+      },
+      "test": {
+        "question_prefix": "Q",
+        "progress": "진행률"
+      },
+      "result": {
+        "title": "당신은...",
+        "characteristics": "주요 특징",
+        "strengths": "강점",
+        "weaknesses": "약점",
+        "compatibility": "잘 맞는 유형"
+      }
+    },
+    "en": {
+      "common": {
+        "start": "Start",
+        "next": "Next",
+        "previous": "Previous",
+        "complete": "Complete",
+        "share": "Share",
+        "download": "Download",
+        "restart": "Restart"
+      },
+      "home": {
+        "title": "Cute MBTI Test",
+        "subtitle": "Discover your personality type in a fun way!",
+        "cta": "Start Test"
+      },
+      "test": {
+        "question_prefix": "Q",
+        "progress": "Progress"
+      },
+      "result": {
+        "title": "You are...",
+        "characteristics": "Key Characteristics",
+        "strengths": "Strengths",
+        "weaknesses": "Weaknesses",
+        "compatibility": "Compatible Types"
+      }
+    }
+  }
+}
