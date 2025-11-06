@@ -199,9 +199,77 @@
             transform: translateX(10px);
         }
 
+        .option-btn:active {
+            transform: scale(0.98);
+            border-color: var(--primary);
+        }
+
         .option-emoji {
             font-size: 2.5rem;
             flex-shrink: 0;
+        }
+
+        /* Score Bar Styles */
+        .score-section {
+            margin-bottom: 40px;
+        }
+
+        .score-item {
+            margin-bottom: 30px;
+        }
+
+        .score-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .score-bar-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            height: 40px;
+        }
+
+        .score-bar {
+            flex: 1;
+            height: 100%;
+            background: #F0F0F0;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .score-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            transition: width 0.8s ease-out;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 15px;
+            color: white;
+            font-weight: 700;
+        }
+
+        .score-label {
+            min-width: 80px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .borderline-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #FEC8D8 0%, #FFE5EC 100%);
+            color: var(--secondary);
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: 2px solid var(--accent);
+            margin-left: 10px;
         }
 
         /* Result Page */
@@ -367,6 +435,14 @@
             .action-buttons {
                 flex-direction: column;
             }
+            .score-bar-container {
+                flex-direction: column;
+                height: auto;
+            }
+            .score-label {
+                min-width: auto;
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -374,102 +450,193 @@
     <div id="app"></div>
 
     <script>
-        // MBTI Data
+        // MBTI Data with 20 questions (5 per dimension) and reverse-keyed items
         const questions = [
+            // E/I Questions (5)
             {
                 id: 1,
+                axis: 'EI',
                 question: "주말에 친구들이 갑자기 놀자고 할 때 나는?",
                 options: [
-                    { text: "좋아! 바로 준비하고 나갈게!", type: "E", emoji: "🎉" },
-                    { text: "음... 오늘은 집에서 쉬고 싶은데...", type: "I", emoji: "🏠" }
+                    { text: "좋아! 바로 준비하고 나갈게!", type: "E", key: 1, emoji: "🎉" },
+                    { text: "음... 오늘은 집에서 쉬고 싶은데...", type: "I", key: -1, emoji: "🏠" }
                 ]
             },
             {
                 id: 2,
-                question: "새로운 프로젝트를 시작할 때 나는?",
+                axis: 'EI',
+                question: "파티에 갔을 때 나는?",
                 options: [
-                    { text: "일단 계획부터 세밀하게 짜보자!", type: "J", emoji: "📋" },
-                    { text: "대충 시작하면서 생각해보면 되지!", type: "P", emoji: "🎨" }
+                    { text: "모르는 사람들한테 먼저 말 걸기!", type: "E", key: 1, emoji: "🥳" },
+                    { text: "아는 사람들 옆에서 편하게 있기", type: "I", key: -1, emoji: "😊" }
                 ]
             },
             {
                 id: 3,
-                question: "친구가 고민 상담을 할 때 나는?",
+                axis: 'EI',
+                question: "갑자기 약속이 취소됐을 때 나는?",
                 options: [
-                    { text: "그럴 땐 이렇게 하면 해결돼!", type: "T", emoji: "💡" },
-                    { text: "너무 힘들었겠다... 괜찮아?", type: "F", emoji: "💕" }
+                    { text: "아쉬워... 다른 친구라도 만날까?", type: "E", key: 1, emoji: "☀️" },
+                    { text: "오히려 좋아! 혼자만의 시간~", type: "I", key: -1, emoji: "🌙" }
                 ]
             },
             {
                 id: 4,
-                question: "여행을 계획할 때 나는?",
+                axis: 'EI',
+                question: "에너지를 얻는 방법은?",
                 options: [
-                    { text: "일정표 만들고 맛집 리스트 정리!", type: "J", emoji: "✈️" },
-                    { text: "그냥 가서 발길 닿는 대로~", type: "P", emoji: "🗺️" }
+                    { text: "사람들과 함께 시간을 보내며", type: "E", key: 1, emoji: "🎊" },
+                    { text: "혼자만의 조용한 시간을 가지며", type: "I", key: -1, emoji: "📚" }
                 ]
             },
             {
                 id: 5,
-                question: "영화를 볼 때 나는?",
+                axis: 'EI',
+                question: "새로운 환경에서 나는?",
                 options: [
-                    { text: "스토리의 복선과 의미를 분석해", type: "N", emoji: "🔮" },
-                    { text: "그냥 재미있게 보면 되는 거 아냐?", type: "S", emoji: "🎬" }
+                    { text: "먼저 다가가서 사람들과 친해지려 해", type: "E", key: 1, emoji: "👋" },
+                    { text: "조용히 관찰하며 천천히 적응해", type: "I", key: -1, emoji: "👀" }
                 ]
             },
+            
+            // S/N Questions (5)
             {
                 id: 6,
-                question: "파티에 갔을 때 나는?",
+                axis: 'SN',
+                question: "영화를 볼 때 나는?",
                 options: [
-                    { text: "모르는 사람들한테 먼저 말 걸기!", type: "E", emoji: "🥳" },
-                    { text: "아는 사람들 옆에서 편하게 있기", type: "I", emoji: "😊" }
+                    { text: "그냥 재미있게 보면 되는 거 아냐?", type: "S", key: -1, emoji: "🎬" },
+                    { text: "스토리의 복선과 의미를 분석해", type: "N", key: 1, emoji: "🔮" }
                 ]
             },
             {
                 id: 7,
+                axis: 'SN',
                 question: "새로운 것을 배울 때 나는?",
                 options: [
-                    { text: "원리와 이론부터 이해하고 싶어", type: "N", emoji: "📚" },
-                    { text: "일단 실전에서 해보면서 배워", type: "S", emoji: "⚡" }
+                    { text: "일단 실전에서 해보면서 배워", type: "S", key: -1, emoji: "⚡" },
+                    { text: "원리와 이론부터 이해하고 싶어", type: "N", key: 1, emoji: "📚" }
                 ]
             },
             {
                 id: 8,
-                question: "의견이 다른 친구와 대화할 때 나는?",
+                axis: 'SN',
+                question: "책을 읽을 때 나는?",
                 options: [
-                    { text: "논리적으로 설득하려고 해", type: "T", emoji: "🧠" },
-                    { text: "상대방 기분을 먼저 생각해", type: "F", emoji: "🌸" }
+                    { text: "있는 그대로 내용을 받아들여", type: "S", key: -1, emoji: "📄" },
+                    { text: "행간의 의미와 상징을 찾아봐", type: "N", key: 1, emoji: "📖" }
                 ]
             },
             {
                 id: 9,
-                question: "갑자기 약속이 취소됐을 때 나는?",
+                axis: 'SN',
+                question: "대화할 때 나는?",
                 options: [
-                    { text: "오히려 좋아! 혼자만의 시간~", type: "I", emoji: "🌙" },
-                    { text: "아쉬워... 다른 친구라도 만날까?", type: "E", emoji: "☀️" }
+                    { text: "구체적인 사실과 경험 위주로", type: "S", key: -1, emoji: "📊" },
+                    { text: "가능성과 의미에 대해 이야기해", type: "N", key: 1, emoji: "💭" }
                 ]
             },
             {
                 id: 10,
-                question: "책을 읽을 때 나는?",
+                axis: 'SN',
+                question: "문제를 해결할 때?",
                 options: [
-                    { text: "행간의 의미와 상징을 찾아봐", type: "N", emoji: "📖" },
-                    { text: "있는 그대로 내용을 받아들여", type: "S", emoji: "📄" }
+                    { text: "검증된 방법을 따라가", type: "S", key: -1, emoji: "✅" },
+                    { text: "새로운 방법을 시도해봐", type: "N", key: 1, emoji: "💡" }
                 ]
             },
+
+            // T/F Questions (5)
             {
                 id: 11,
-                question: "과제나 업무를 할 때 나는?",
+                axis: 'TF',
+                question: "친구가 고민 상담을 할 때 나는?",
                 options: [
-                    { text: "미리미리 계획적으로 끝내기", type: "J", emoji: "✅" },
-                    { text: "마감 임박할 때 집중력 폭발!", type: "P", emoji: "🔥" }
+                    { text: "그럴 땐 이렇게 하면 해결돼!", type: "T", key: 1, emoji: "💡" },
+                    { text: "너무 힘들었겠다... 괜찮아?", type: "F", key: -1, emoji: "💕" }
                 ]
             },
             {
                 id: 12,
+                axis: 'TF',
+                question: "의견이 다른 친구와 대화할 때 나는?",
+                options: [
+                    { text: "논리적으로 설득하려고 해", type: "T", key: 1, emoji: "🧠" },
+                    { text: "상대방 기분을 먼저 생각해", type: "F", key: -1, emoji: "🌸" }
+                ]
+            },
+            {
+                id: 13,
+                axis: 'TF',
                 question: "친구가 실수했을 때 나는?",
                 options: [
-                    { text: "괜찮아, 누구나 실수할 수 있어", type: "F", emoji: "🤗" },
-                    { text: "다음엔 이렇게 하면 안 그럴 거야", type: "T", emoji: "👨‍🏫" }
+                    { text: "다음엔 이렇게 하면 안 그럴 거야", type: "T", key: 1, emoji: "👨‍🏫" },
+                    { text: "괜찮아, 누구나 실수할 수 있어", type: "F", key: -1, emoji: "🤗" }
+                ]
+            },
+            {
+                id: 14,
+                axis: 'TF',
+                question: "결정을 내릴 때?",
+                options: [
+                    { text: "객관적인 사실과 논리를 따져", type: "T", key: 1, emoji: "📐" },
+                    { text: "사람들의 감정과 관계를 고려해", type: "F", key: -1, emoji: "❤️" }
+                ]
+            },
+            {
+                id: 15,
+                axis: 'TF',
+                question: "비판을 받았을 때?",
+                options: [
+                    { text: "합리적이면 받아들이고 개선해", type: "T", key: 1, emoji: "🎯" },
+                    { text: "왜 그런 말을 했을까 신경 쓰여", type: "F", key: -1, emoji: "😢" }
+                ]
+            },
+
+            // J/P Questions (5)
+            {
+                id: 16,
+                axis: 'JP',
+                question: "새로운 프로젝트를 시작할 때 나는?",
+                options: [
+                    { text: "일단 계획부터 세밀하게 짜보자!", type: "J", key: 1, emoji: "📋" },
+                    { text: "대충 시작하면서 생각해보면 되지!", type: "P", key: -1, emoji: "🎨" }
+                ]
+            },
+            {
+                id: 17,
+                axis: 'JP',
+                question: "여행을 계획할 때 나는?",
+                options: [
+                    { text: "일정표 만들고 맛집 리스트 정리!", type: "J", key: 1, emoji: "✈️" },
+                    { text: "그냥 가서 발길 닿는 대로~", type: "P", key: -1, emoji: "🗺️" }
+                ]
+            },
+            {
+                id: 18,
+                axis: 'JP',
+                question: "과제나 업무를 할 때 나는?",
+                options: [
+                    { text: "미리미리 계획적으로 끝내기", type: "J", key: 1, emoji: "✅" },
+                    { text: "마감 임박할 때 집중력 폭발!", type: "P", key: -1, emoji: "🔥" }
+                ]
+            },
+            {
+                id: 19,
+                axis: 'JP',
+                question: "주말 계획은?",
+                options: [
+                    { text: "미리 짜놓고 그대로 실행해", type: "J", key: 1, emoji: "📅" },
+                    { text: "그때그때 기분에 따라 정해", type: "P", key: -1, emoji: "🎲" }
+                ]
+            },
+            {
+                id: 20,
+                axis: 'JP',
+                question: "방 정리는?",
+                options: [
+                    { text: "규칙적으로 깔끔하게 유지해", type: "J", key: 1, emoji: "🧹" },
+                    { text: "필요할 때만 정리해", type: "P", key: -1, emoji: "📦" }
                 ]
             }
         ];
@@ -609,18 +776,50 @@
         let currentPage = 'home';
         let currentQuestion = 0;
         let answers = [];
+        let scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
 
-        // Calculate MBTI
+        // Calculate MBTI with scores
         function calculateMBTI(userAnswers) {
-            const counts = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
-            userAnswers.forEach(answer => counts[answer]++);
+            // Reset scores
+            scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
             
-            return (
-                (counts.E >= counts.I ? 'E' : 'I') +
-                (counts.S >= counts.N ? 'S' : 'N') +
-                (counts.T >= counts.F ? 'T' : 'F') +
-                (counts.J >= counts.P ? 'J' : 'P')
+            // Calculate scores with reverse-keyed items
+            userAnswers.forEach((answer, index) => {
+                const question = questions[index];
+                const option = question.options.find(opt => opt.type === answer);
+                if (option) {
+                    scores[answer] += option.key;
+                }
+            });
+            
+            // Determine type
+            const mbtiType = (
+                (scores.E >= scores.I ? 'E' : 'I') +
+                (scores.N >= scores.S ? 'N' : 'S') +
+                (scores.T >= scores.F ? 'T' : 'F') +
+                (scores.J >= scores.P ? 'J' : 'P')
             );
+            
+            return mbtiType;
+        }
+
+        // Get percentage for each dimension
+        function getPercentages() {
+            return {
+                E: Math.round((scores.E / (scores.E + Math.abs(scores.I))) * 100) || 50,
+                I: Math.round((Math.abs(scores.I) / (scores.E + Math.abs(scores.I))) * 100) || 50,
+                S: Math.round((Math.abs(scores.S) / (Math.abs(scores.S) + scores.N)) * 100) || 50,
+                N: Math.round((scores.N / (Math.abs(scores.S) + scores.N)) * 100) || 50,
+                T: Math.round((scores.T / (scores.T + Math.abs(scores.F))) * 100) || 50,
+                F: Math.round((Math.abs(scores.F) / (scores.T + Math.abs(scores.F))) * 100) || 50,
+                J: Math.round((scores.J / (scores.J + Math.abs(scores.P))) * 100) || 50,
+                P: Math.round((Math.abs(scores.P) / (scores.J + Math.abs(scores.P))) * 100) || 50
+            };
+        }
+
+        // Check if borderline (within 20% difference)
+        function isBorderline(type1Percent, type2Percent) {
+            return Math.abs(type1Percent - type2Percent) <= 20;
         }
 
         // Render Functions
@@ -634,7 +833,7 @@
                         <div class="feature-card">
                             <div class="feature-emoji">⚡</div>
                             <h3>빠른 테스트</h3>
-                            <p>12개 질문으로<br/>3분 완성!</p>
+                            <p>20개 질문으로<br/>5분 완성!</p>
                         </div>
                         <div class="feature-card">
                             <div class="feature-emoji">🎯</div>
@@ -670,7 +869,7 @@
                     <h2 class="question-text">${question.question}</h2>
                     
                     <div>
-                        ${question.options.map((option, index) => `
+                        ${question.options.map((option) => `
                             <button class="option-btn" onclick="selectAnswer('${option.type}')">
                                 <span class="option-emoji">${option.emoji}</span>
                                 <span>${option.text}</span>
@@ -684,6 +883,19 @@
         function renderResult() {
             const mbtiType = calculateMBTI(answers);
             const result = mbtiResults[mbtiType];
+            const percentages = getPercentages();
+            
+            // Check borderlines
+            const eiTypes = mbtiType[0] === 'E' ? ['E', 'I'] : ['I', 'E'];
+            const snTypes = mbtiType[1] === 'S' ? ['S', 'N'] : ['N', 'S'];
+            const tfTypes = mbtiType[2] === 'T' ? ['T', 'F'] : ['F', 'T'];
+            const jpTypes = mbtiType[3] === 'J' ? ['J', 'P'] : ['P', 'J'];
+            
+            const borderlines = [];
+            if (isBorderline(percentages[eiTypes[0]], percentages[eiTypes[1]])) borderlines.push('E/I');
+            if (isBorderline(percentages[snTypes[0]], percentages[snTypes[1]])) borderlines.push('S/N');
+            if (isBorderline(percentages[tfTypes[0]], percentages[tfTypes[1]])) borderlines.push('T/F');
+            if (isBorderline(percentages[jpTypes[0]], percentages[jpTypes[1]])) borderlines.push('J/P');
             
             return `
                 <div class="card">
@@ -693,8 +905,69 @@
                             <span class="result-emoji">${result.emoji}</span>
                             <span class="result-type">${result.type}</span>
                         </div>
+                        ${borderlines.length > 0 ? `<span class="borderline-badge">경계형: ${borderlines.join(', ')}</span>` : ''}
                         <h2 class="result-title">${result.title}</h2>
                         <p class="result-description">${result.description}</p>
+                    </div>
+
+                    <div class="score-section">
+                        <h3 class="section-title">📊 성향 분석</h3>
+                        
+                        <div class="score-item">
+                            <div class="score-header">
+                                <span>외향형(E)</span>
+                                <span>내향형(I)</span>
+                            </div>
+                            <div class="score-bar-container">
+                                <span class="score-label">${percentages.E}%</span>
+                                <div class="score-bar">
+                                    <div class="score-bar-fill" style="width: ${percentages.E}%">${percentages.E}%</div>
+                                </div>
+                                <span class="score-label">${percentages.I}%</span>
+                            </div>
+                        </div>
+
+                        <div class="score-item">
+                            <div class="score-header">
+                                <span>감각형(S)</span>
+                                <span>직관형(N)</span>
+                            </div>
+                            <div class="score-bar-container">
+                                <span class="score-label">${percentages.S}%</span>
+                                <div class="score-bar">
+                                    <div class="score-bar-fill" style="width: ${percentages.S}%">${percentages.S}%</div>
+                                </div>
+                                <span class="score-label">${percentages.N}%</span>
+                            </div>
+                        </div>
+
+                        <div class="score-item">
+                            <div class="score-header">
+                                <span>사고형(T)</span>
+                                <span>감정형(F)</span>
+                            </div>
+                            <div class="score-bar-container">
+                                <span class="score-label">${percentages.T}%</span>
+                                <div class="score-bar">
+                                    <div class="score-bar-fill" style="width: ${percentages.T}%">${percentages.T}%</div>
+                                </div>
+                                <span class="score-label">${percentages.F}%</span>
+                            </div>
+                        </div>
+
+                        <div class="score-item">
+                            <div class="score-header">
+                                <span>판단형(J)</span>
+                                <span>인식형(P)</span>
+                            </div>
+                            <div class="score-bar-container">
+                                <span class="score-label">${percentages.J}%</span>
+                                <div class="score-bar">
+                                    <div class="score-bar-fill" style="width: ${percentages.J}%">${percentages.J}%</div>
+                                </div>
+                                <span class="score-label">${percentages.P}%</span>
+                            </div>
+                        </div>
                     </div>
 
                     <div style="margin-bottom: 40px;">
@@ -765,31 +1038,44 @@
             currentPage = 'test';
             currentQuestion = 0;
             answers = [];
+            scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
             render();
         }
 
         function selectAnswer(type) {
             answers.push(type);
             
-            if (currentQuestion < questions.length - 1) {
-                currentQuestion++;
-                render();
-            } else {
-                currentPage = 'result';
-                render();
-            }
+            // Add a brief delay to show selection, then move to next question
+            setTimeout(() => {
+                if (currentQuestion < questions.length - 1) {
+                    currentQuestion++;
+                    render();
+                } else {
+                    currentPage = 'result';
+                    render();
+                }
+            }, 200);
         }
 
         function restart() {
             currentPage = 'home';
             currentQuestion = 0;
             answers = [];
+            scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
             render();
         }
 
         function shareResult(mbtiType) {
             const result = mbtiResults[mbtiType];
-            const shareText = `나의 MBTI는 ${result.type} - ${result.title}! ${result.emoji}\n귀여운 MBTI 테스트로 확인해보세요!`;
+            const percentages = getPercentages();
+            const shareText = `나의 MBTI는 ${result.type} - ${result.title}! ${result.emoji}
+            
+E/I: ${percentages[mbtiType[0]]}%
+S/N: ${percentages[mbtiType[1]]}%
+T/F: ${percentages[mbtiType[2]]}%
+J/P: ${percentages[mbtiType[3]]}%
+
+귀여운 MBTI 테스트로 확인해보세요!`;
             
             if (navigator.share) {
                 navigator.share({
