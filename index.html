@@ -934,8 +934,10 @@
 
         // Calculate MBTI with scores
         function calculateMBTI(userAnswers) {
+            // Reset scores
             scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
             
+            // Calculate scores with reverse-keyed items
             userAnswers.forEach((answer, index) => {
                 const question = questions[index];
                 const option = question.options.find(opt => opt.type === answer);
@@ -944,6 +946,7 @@
                 }
             });
             
+            // Determine type
             const mbtiType = (
                 (scores.E >= scores.I ? 'E' : 'I') +
                 (scores.N >= scores.S ? 'N' : 'S') +
@@ -954,6 +957,7 @@
             return mbtiType;
         }
 
+        // Get percentage for each dimension
         function getPercentages() {
             return {
                 E: Math.round((scores.E / (scores.E + Math.abs(scores.I))) * 100) || 50,
@@ -967,10 +971,12 @@
             };
         }
 
+        // Check if borderline (within 10% difference)
         function isBorderline(type1Percent, type2Percent) {
             return Math.abs(type1Percent - type2Percent) <= 20;
         }
 
+        // Render Functions
         function renderHome() {
             return `
                 <div class="card">
@@ -1108,6 +1114,8 @@
 
         function renderPremiumResult(mbtiType, result) {
             const percentages = getPercentages();
+            
+            // Check borderlines
             const eiTypes = mbtiType[0] === 'E' ? ['E', 'I'] : ['I', 'E'];
             const snTypes = mbtiType[1] === 'S' ? ['S', 'N'] : ['N', 'S'];
             const tfTypes = mbtiType[2] === 'T' ? ['T', 'F'] : ['F', 'T'];
@@ -1248,6 +1256,7 @@
             `;
         }
 
+        // App Logic
         function render() {
             const app = document.getElementById('app');
             app.innerHTML = `<div class="container">${
@@ -1298,10 +1307,24 @@
         function startAdCountdown() {
             const interval = setInterval(() => {
                 adCountdown--;
-                render();
                 
-                if (adCountdown <= 0) {
+                // Update only countdown number and progress bar (no flicker!)
+                const countdownEl = document.querySelector('.ad-countdown');
+                const progressEl = document.querySelector('.ad-progress-fill');
+                
+                if (adCountdown > 0) {
+                    // Update countdown number
+                    if (countdownEl) countdownEl.textContent = adCountdown;
+                    
+                    // Update progress bar
+                    if (progressEl) {
+                        const progress = ((15 - adCountdown) / 15) * 100;
+                        progressEl.style.width = progress + '%';
+                    }
+                } else {
+                    // When countdown reaches 0, render completion screen
                     clearInterval(interval);
+                    render();
                 }
             }, 1000);
         }
@@ -1323,6 +1346,7 @@
         function selectAnswer(type) {
             answers.push(type);
             
+            // Add a brief delay to show selection, then move to next question
             setTimeout(() => {
                 if (currentQuestion < questions.length - 1) {
                     currentQuestion++;
@@ -1367,6 +1391,7 @@ J/P: ${percentages[mbtiType[3]]}%
             }
         }
 
+        // Initialize
         render();
     </script>
 </body>
