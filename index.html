@@ -419,6 +419,149 @@
             display: none !important;
         }
 
+        /* Ad Modal Styles */
+        .ad-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+        }
+
+        .ad-content {
+            background: white;
+            padding: 60px 40px;
+            border-radius: 30px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            animation: slideUp 0.5s;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .ad-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .ad-description {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 30px;
+        }
+
+        .ad-countdown {
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 30px 0;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .ad-progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #F0F0F0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 30px 0;
+        }
+
+        .ad-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            transition: width 1s linear;
+        }
+
+        .premium-unlock-btn {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: white;
+            padding: 20px 50px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: block;
+            margin: 40px auto 0;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+            transition: all 0.3s;
+        }
+
+        .premium-unlock-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.4);
+        }
+
+        .premium-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .basic-result {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .unlock-section {
+            background: linear-gradient(135deg, var(--background) 0%, white 100%);
+            padding: 40px;
+            border-radius: 20px;
+            margin-top: 40px;
+            border: 3px dashed var(--accent);
+        }
+
+        .unlock-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .unlock-features {
+            text-align: left;
+            margin: 30px 0;
+        }
+
+        .unlock-feature-item {
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .unlock-icon {
+            font-size: 2rem;
+        }
+
         @media (max-width: 768px) {
             .card {
                 padding: 40px 30px;
@@ -442,6 +585,15 @@
             .score-label {
                 min-width: auto;
                 width: 100%;
+            }
+            .ad-content {
+                padding: 40px 30px;
+            }
+            .ad-title {
+                font-size: 1.5rem;
+            }
+            .ad-countdown {
+                font-size: 3rem;
             }
         }
     </style>
@@ -777,13 +929,13 @@
         let currentQuestion = 0;
         let answers = [];
         let scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+        let isPremium = false;
+        let adCountdown = 15;
 
         // Calculate MBTI with scores
         function calculateMBTI(userAnswers) {
-            // Reset scores
             scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
             
-            // Calculate scores with reverse-keyed items
             userAnswers.forEach((answer, index) => {
                 const question = questions[index];
                 const option = question.options.find(opt => opt.type === answer);
@@ -792,7 +944,6 @@
                 }
             });
             
-            // Determine type
             const mbtiType = (
                 (scores.E >= scores.I ? 'E' : 'I') +
                 (scores.N >= scores.S ? 'N' : 'S') +
@@ -803,7 +954,6 @@
             return mbtiType;
         }
 
-        // Get percentage for each dimension
         function getPercentages() {
             return {
                 E: Math.round((scores.E / (scores.E + Math.abs(scores.I))) * 100) || 50,
@@ -817,12 +967,10 @@
             };
         }
 
-        // Check if borderline (within 20% difference)
         function isBorderline(type1Percent, type2Percent) {
             return Math.abs(type1Percent - type2Percent) <= 20;
         }
 
-        // Render Functions
         function renderHome() {
             return `
                 <div class="card">
@@ -883,9 +1031,83 @@
         function renderResult() {
             const mbtiType = calculateMBTI(answers);
             const result = mbtiResults[mbtiType];
-            const percentages = getPercentages();
             
-            // Check borderlines
+            if (!isPremium) {
+                return renderBasicResult(mbtiType, result);
+            } else {
+                return renderPremiumResult(mbtiType, result);
+            }
+        }
+
+        function renderBasicResult(mbtiType, result) {
+            return `
+                <div class="card">
+                    <div class="basic-result">
+                        <h1 class="result-announcement">🎉 당신은...</h1>
+                        <div class="result-type-badge" style="background: ${result.color}">
+                            <span class="result-emoji">${result.emoji}</span>
+                            <span class="result-type">${mbtiType}</span>
+                        </div>
+                        <h2 class="result-title">${result.title}</h2>
+                        <p class="result-description">${result.description}</p>
+                    </div>
+
+                    <div class="unlock-section">
+                        <h3 class="unlock-title">🔒 더 자세한 결과 보기</h3>
+                        <p style="color: var(--text-light); margin-bottom: 20px;">
+                            15초 광고를 시청하고 프리미엄 결과를 확인하세요!
+                        </p>
+                        
+                        <div class="unlock-features">
+                            <div class="unlock-feature-item">
+                                <span class="unlock-icon">📊</span>
+                                <div>
+                                    <strong>성향 분석 그래프</strong>
+                                    <p style="font-size: 0.9rem; color: var(--text-light); margin: 0;">각 차원별 정확한 점수 확인</p>
+                                </div>
+                            </div>
+                            <div class="unlock-feature-item">
+                                <span class="unlock-icon">✨</span>
+                                <div>
+                                    <strong>상세 특징 분석</strong>
+                                    <p style="font-size: 0.9rem; color: var(--text-light); margin: 0;">나의 성격을 깊이 있게 파악</p>
+                                </div>
+                            </div>
+                            <div class="unlock-feature-item">
+                                <span class="unlock-icon">💪</span>
+                                <div>
+                                    <strong>강점 & 약점</strong>
+                                    <p style="font-size: 0.9rem; color: var(--text-light); margin: 0;">나를 발전시키는 방법</p>
+                                </div>
+                            </div>
+                            <div class="unlock-feature-item">
+                                <span class="unlock-icon">💕</span>
+                                <div>
+                                    <strong>궁합 분석</strong>
+                                    <p style="font-size: 0.9rem; color: var(--text-light); margin: 0;">나와 잘 맞는 유형 찾기</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="premium-unlock-btn" onclick="showAdModal()">
+                            🎁 광고 보고 상세 결과 보기
+                        </button>
+                    </div>
+
+                    <div class="action-buttons" style="margin-top: 40px;">
+                        <button class="btn-secondary" onclick="shareResult('${mbtiType}')">
+                            공유하기 🔗
+                        </button>
+                        <button class="btn" onclick="restart()">
+                            다시 테스트하기 🔄
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderPremiumResult(mbtiType, result) {
+            const percentages = getPercentages();
             const eiTypes = mbtiType[0] === 'E' ? ['E', 'I'] : ['I', 'E'];
             const snTypes = mbtiType[1] === 'S' ? ['S', 'N'] : ['N', 'S'];
             const tfTypes = mbtiType[2] === 'T' ? ['T', 'F'] : ['F', 'T'];
@@ -899,6 +1121,8 @@
             
             return `
                 <div class="card">
+                    <span class="premium-badge">✨ 프리미엄 결과</span>
+                    
                     <div class="result-header">
                         <h1 class="result-announcement">🎉 당신은...</h1>
                         <div class="result-type-badge" style="background: ${result.color}">
@@ -1024,14 +1248,68 @@
             `;
         }
 
-        // App Logic
         function render() {
             const app = document.getElementById('app');
             app.innerHTML = `<div class="container">${
                 currentPage === 'home' ? renderHome() :
                 currentPage === 'test' ? renderTest() :
+                currentPage === 'ad' ? renderAdModal() :
                 renderResult()
             }</div>`;
+        }
+
+        function renderAdModal() {
+            const progress = ((15 - adCountdown) / 15) * 100;
+            
+            return `
+                <div class="ad-modal">
+                    <div class="ad-content">
+                        <div class="ad-title">📺 광고 시청 중...</div>
+                        <p class="ad-description">
+                            ${adCountdown > 0 ? '잠시만 기다려주세요!' : '광고 시청 완료! 🎉'}
+                        </p>
+                        
+                        ${adCountdown > 0 ? `
+                            <div class="ad-countdown">${adCountdown}</div>
+                            <div class="ad-progress-bar">
+                                <div class="ad-progress-fill" style="width: ${progress}%"></div>
+                            </div>
+                            <p style="color: var(--text-light); font-size: 0.9rem;">
+                                프리미엄 결과를 준비하고 있습니다...
+                            </p>
+                        ` : `
+                            <div style="font-size: 4rem; margin: 30px 0;">✅</div>
+                            <button class="btn" onclick="unlockPremium()">
+                                프리미엄 결과 보기 🎁
+                            </button>
+                        `}
+                    </div>
+                </div>
+            `;
+        }
+
+        function showAdModal() {
+            currentPage = 'ad';
+            adCountdown = 15;
+            render();
+            startAdCountdown();
+        }
+
+        function startAdCountdown() {
+            const interval = setInterval(() => {
+                adCountdown--;
+                render();
+                
+                if (adCountdown <= 0) {
+                    clearInterval(interval);
+                }
+            }, 1000);
+        }
+
+        function unlockPremium() {
+            isPremium = true;
+            currentPage = 'result';
+            render();
         }
 
         function startTest() {
@@ -1045,7 +1323,6 @@
         function selectAnswer(type) {
             answers.push(type);
             
-            // Add a brief delay to show selection, then move to next question
             setTimeout(() => {
                 if (currentQuestion < questions.length - 1) {
                     currentQuestion++;
@@ -1062,6 +1339,8 @@
             currentQuestion = 0;
             answers = [];
             scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+            isPremium = false;
+            adCountdown = 15;
             render();
         }
 
@@ -1088,7 +1367,6 @@ J/P: ${percentages[mbtiType[3]]}%
             }
         }
 
-        // Initialize
         render();
     </script>
 </body>
