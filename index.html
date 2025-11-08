@@ -18,6 +18,7 @@
             --background: #FFF5F7;
             --text-dark: #2C3E50;
             --text-light: #7F8C8D;
+            --neutral: #9CA3AF;
         }
 
         body {
@@ -50,14 +51,8 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes bounce {
@@ -104,9 +99,7 @@
             transition: transform 0.3s;
         }
 
-        .feature-card:hover {
-            transform: translateY(-10px);
-        }
+        .feature-card:hover { transform: translateY(-10px); }
 
         .feature-emoji {
             font-size: 3rem;
@@ -181,19 +174,24 @@
             margin-bottom: 40px;
         }
 
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
         .option-btn {
             width: 100%;
             background: white;
             border: 3px solid #F0F0F0;
-            padding: 25px 30px;
+            padding: 20px 25px;
             border-radius: 20px;
             display: flex;
             align-items: center;
-            gap: 20px;
-            font-size: 1.1rem;
+            gap: 15px;
+            font-size: 1.05rem;
             cursor: pointer;
             transition: all 0.3s;
-            margin-bottom: 15px;
             text-align: left;
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
@@ -204,16 +202,24 @@
         .option-btn:hover {
             border-color: var(--accent);
             background: var(--background);
-            transform: translateX(10px);
+            transform: translateX(8px);
         }
 
         .option-btn:active {
             transform: scale(0.98);
-            border-color: var(--primary);
+        }
+
+        .option-btn.neutral {
+            border-color: var(--neutral);
+        }
+
+        .option-btn.neutral:hover {
+            border-color: #6B7280;
+            background: #F9FAFB;
         }
 
         .option-emoji {
-            font-size: 2.5rem;
+            font-size: 2rem;
             flex-shrink: 0;
         }
 
@@ -425,10 +431,6 @@
             transform: translateY(-5px);
         }
 
-        .hidden {
-            display: none !important;
-        }
-
         /* Ad Modal Styles */
         .ad-modal {
             position: fixed;
@@ -455,14 +457,8 @@
         }
 
         @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .ad-title {
@@ -590,7 +586,6 @@
             .action-buttons {
                 flex-direction: column;
             }
-            /* 모바일에서도 데스크톱과 동일한 가로 레이아웃 유지 */
             .score-bar-container {
                 gap: 5px;
             }
@@ -614,6 +609,13 @@
             .ad-countdown {
                 font-size: 3rem;
             }
+            .option-btn {
+                padding: 18px 20px;
+                font-size: 0.95rem;
+            }
+            .option-emoji {
+                font-size: 1.8rem;
+            }
         }
     </style>
 </head>
@@ -621,16 +623,19 @@
     <div id="app"></div>
 
     <script>
-        // MBTI Data with 20 questions (5 per dimension) and reverse-keyed items
+        // 🎨 MBTI 테스트 v2.0 - 3점 척도 + 25문항 시스템
+        // 정밀도 향상: 아니다(-1), 보통(0), 그렇다(+1)
+        
         const questions = [
-            // E/I Questions (5)
+            // E/I 축 (7문항) - 외향성/내향성
             {
                 id: 1,
                 axis: 'EI',
-                question: "주말에 친구들이 갑자기 놀자고 할 때 나는?",
+                question: "주말에 친구들이 갑자기 놀자고 할 때?",
                 options: [
-                    { text: "좋아! 바로 준비하고 나갈게!", type: "E", key: 1, emoji: "🎉" },
-                    { text: "음... 오늘은 집에서 쉬고 싶은데...", type: "I", key: -1, emoji: "🏠" }
+                    { text: "좋아! 바로 준비!", type: "E", value: 1, emoji: "🎉" },
+                    { text: "상황에 따라 다름", type: "N", value: 0, emoji: "🤔" },
+                    { text: "집에서 쉬고 싶어", type: "I", value: -1, emoji: "🏠" }
                 ]
             },
             {
@@ -638,176 +643,245 @@
                 axis: 'EI',
                 question: "파티에 갔을 때 나는?",
                 options: [
-                    { text: "모르는 사람들한테 먼저 말 걸기!", type: "E", key: 1, emoji: "🥳" },
-                    { text: "아는 사람들 옆에서 편하게 있기", type: "I", key: -1, emoji: "😊" }
+                    { text: "여러 사람과 대화", type: "E", value: 1, emoji: "🥳" },
+                    { text: "적당히 섞여서", type: "N", value: 0, emoji: "😊" },
+                    { text: "친한 사람 옆에", type: "I", value: -1, emoji: "👥" }
                 ]
             },
             {
                 id: 3,
                 axis: 'EI',
-                question: "갑자기 약속이 취소됐을 때 나는?",
+                question: "약속이 취소됐을 때?",
                 options: [
-                    { text: "아쉬워... 다른 친구라도 만날까?", type: "E", key: 1, emoji: "☀️" },
-                    { text: "오히려 좋아! 혼자만의 시간~", type: "I", key: -1, emoji: "🌙" }
+                    { text: "다른 약속 잡기", type: "E", value: 1, emoji: "☀️" },
+                    { text: "그냥 그러려니", type: "N", value: 0, emoji: "🆗" },
+                    { text: "오히려 좋아!", type: "I", value: -1, emoji: "🌙" }
                 ]
             },
             {
                 id: 4,
                 axis: 'EI',
-                question: "에너지를 얻는 방법은?",
+                question: "에너지 충전 방법은?",
                 options: [
-                    { text: "사람들과 함께 시간을 보내며", type: "E", key: 1, emoji: "🎊" },
-                    { text: "혼자만의 조용한 시간을 가지며", type: "I", key: -1, emoji: "📚" }
+                    { text: "사람들과 만남", type: "E", value: 1, emoji: "🎊" },
+                    { text: "때에 따라 다름", type: "N", value: 0, emoji: "⚖️" },
+                    { text: "혼자만의 시간", type: "I", value: -1, emoji: "📚" }
                 ]
             },
             {
                 id: 5,
                 axis: 'EI',
-                question: "새로운 환경에서 나는?",
+                question: "새로운 환경에서?",
                 options: [
-                    { text: "먼저 다가가서 사람들과 친해지려 해", type: "E", key: 1, emoji: "👋" },
-                    { text: "조용히 관찰하며 천천히 적응해", type: "I", key: -1, emoji: "👀" }
+                    { text: "먼저 다가가기", type: "E", value: 1, emoji: "👋" },
+                    { text: "자연스럽게", type: "N", value: 0, emoji: "🙂" },
+                    { text: "조용히 관찰", type: "I", value: -1, emoji: "👀" }
                 ]
             },
-            
-            // S/N Questions (5)
             {
                 id: 6,
-                axis: 'SN',
-                question: "영화를 볼 때 나는?",
+                axis: 'EI',
+                question: "긴 회의 후 기분은?",
                 options: [
-                    { text: "그냥 재미있게 보면 되는 거 아냐?", type: "S", key: -1, emoji: "🎬" },
-                    { text: "스토리의 복선과 의미를 분석해", type: "N", key: 1, emoji: "🔮" }
+                    { text: "더 얘기하고 싶어", type: "E", value: 1, emoji: "💬" },
+                    { text: "적당히 지침", type: "N", value: 0, emoji: "😐" },
+                    { text: "완전 피곤해", type: "I", value: -1, emoji: "😴" }
                 ]
             },
             {
                 id: 7,
-                axis: 'SN',
-                question: "새로운 것을 배울 때 나는?",
+                axis: 'EI',
+                question: "전화 vs 메시지?",
                 options: [
-                    { text: "일단 실전에서 해보면서 배워", type: "S", key: -1, emoji: "⚡" },
-                    { text: "원리와 이론부터 이해하고 싶어", type: "N", key: 1, emoji: "📚" }
+                    { text: "전화가 편해", type: "E", value: 1, emoji: "📞" },
+                    { text: "상황에 따라", type: "N", value: 0, emoji: "📱" },
+                    { text: "메시지가 좋아", type: "I", value: -1, emoji: "💬" }
                 ]
             },
+
+            // S/N 축 (7문항) - 감각/직관
             {
                 id: 8,
                 axis: 'SN',
-                question: "책을 읽을 때 나는?",
+                question: "영화 볼 때?",
                 options: [
-                    { text: "있는 그대로 내용을 받아들여", type: "S", key: -1, emoji: "📄" },
-                    { text: "행간의 의미와 상징을 찾아봐", type: "N", key: 1, emoji: "📖" }
+                    { text: "그냥 재미있게", type: "S", value: -1, emoji: "🎬" },
+                    { text: "둘 다 섞여서", type: "N", value: 0, emoji: "🎭" },
+                    { text: "의미/복선 분석", type: "N", value: 1, emoji: "🔮" }
                 ]
             },
             {
                 id: 9,
                 axis: 'SN',
-                question: "대화할 때 나는?",
+                question: "새로운 것 배울 때?",
                 options: [
-                    { text: "구체적인 사실과 경험 위주로", type: "S", key: -1, emoji: "📊" },
-                    { text: "가능성과 의미에 대해 이야기해", type: "N", key: 1, emoji: "💭" }
+                    { text: "일단 해보기", type: "S", value: -1, emoji: "⚡" },
+                    { text: "적절히 병행", type: "N", value: 0, emoji: "🎯" },
+                    { text: "원리부터 이해", type: "N", value: 1, emoji: "📚" }
                 ]
             },
             {
                 id: 10,
                 axis: 'SN',
-                question: "문제를 해결할 때?",
+                question: "대화할 때?",
                 options: [
-                    { text: "검증된 방법을 따라가", type: "S", key: -1, emoji: "✅" },
-                    { text: "새로운 방법을 시도해봐", type: "N", key: 1, emoji: "💡" }
+                    { text: "구체적 사실", type: "S", value: -1, emoji: "📊" },
+                    { text: "상황에 따라", type: "N", value: 0, emoji: "💭" },
+                    { text: "가능성/의미", type: "N", value: 1, emoji: "🌟" }
                 ]
             },
-
-            // T/F Questions (5)
             {
                 id: 11,
-                axis: 'TF',
-                question: "친구가 고민 상담을 할 때 나는?",
+                axis: 'SN',
+                question: "설명서 읽기?",
                 options: [
-                    { text: "그럴 땐 이렇게 하면 해결돼!", type: "T", key: 1, emoji: "💡" },
-                    { text: "너무 힘들었겠다... 괜찮아?", type: "F", key: -1, emoji: "💕" }
+                    { text: "꼼꼼히 읽음", type: "S", value: -1, emoji: "📄" },
+                    { text: "필요한 부분만", type: "N", value: 0, emoji: "📖" },
+                    { text: "대충 감으로", type: "N", value: 1, emoji: "💡" }
                 ]
             },
             {
                 id: 12,
-                axis: 'TF',
-                question: "의견이 다른 친구와 대화할 때 나는?",
+                axis: 'SN',
+                question: "문제 해결 방식?",
                 options: [
-                    { text: "논리적으로 설득하려고 해", type: "T", key: 1, emoji: "🧠" },
-                    { text: "상대방 기분을 먼저 생각해", type: "F", key: -1, emoji: "🌸" }
+                    { text: "검증된 방법", type: "S", value: -1, emoji: "✅" },
+                    { text: "상황 보고", type: "N", value: 0, emoji: "🔄" },
+                    { text: "새로운 방법", type: "N", value: 1, emoji: "💡" }
                 ]
             },
             {
                 id: 13,
-                axis: 'TF',
-                question: "친구가 실수했을 때 나는?",
+                axis: 'SN',
+                question: "미래를 생각할 때?",
                 options: [
-                    { text: "다음엔 이렇게 하면 안 그럴 거야", type: "T", key: 1, emoji: "👨‍🏫" },
-                    { text: "괜찮아, 누구나 실수할 수 있어", type: "F", key: -1, emoji: "🤗" }
+                    { text: "현실적 계획", type: "S", value: -1, emoji: "📅" },
+                    { text: "적절히 섞어서", type: "N", value: 0, emoji: "🎯" },
+                    { text: "큰 그림/가능성", type: "N", value: 1, emoji: "🌈" }
                 ]
             },
             {
                 id: 14,
-                axis: 'TF',
-                question: "결정을 내릴 때?",
+                axis: 'SN',
+                question: "이야기를 할 때?",
                 options: [
-                    { text: "객관적인 사실과 논리를 따져", type: "T", key: 1, emoji: "📐" },
-                    { text: "사람들의 감정과 관계를 고려해", type: "F", key: -1, emoji: "❤️" }
-                ]
-            },
-            {
-                id: 15,
-                axis: 'TF',
-                question: "비판을 받았을 때?",
-                options: [
-                    { text: "합리적이면 받아들이고 개선해", type: "T", key: 1, emoji: "🎯" },
-                    { text: "왜 그런 말을 했을까 신경 쓰여", type: "F", key: -1, emoji: "😢" }
+                    { text: "순서대로 자세히", type: "S", value: -1, emoji: "📝" },
+                    { text: "적당히", type: "N", value: 0, emoji: "💬" },
+                    { text: "결론/핵심만", type: "N", value: 1, emoji: "⭐" }
                 ]
             },
 
-            // J/P Questions (5)
+            // T/F 축 (6문항) - 사고/감정
+            {
+                id: 15,
+                axis: 'TF',
+                question: "친구 고민 상담?",
+                options: [
+                    { text: "해결책 제시", type: "T", value: 1, emoji: "💡" },
+                    { text: "상황에 따라", type: "N", value: 0, emoji: "🤝" },
+                    { text: "공감/위로", type: "F", value: -1, emoji: "💕" }
+                ]
+            },
             {
                 id: 16,
-                axis: 'JP',
-                question: "새로운 프로젝트를 시작할 때 나는?",
+                axis: 'TF',
+                question: "의견 충돌 시?",
                 options: [
-                    { text: "일단 계획부터 세밀하게 짜보자!", type: "J", key: 1, emoji: "📋" },
-                    { text: "대충 시작하면서 생각해보면 되지!", type: "P", key: -1, emoji: "🎨" }
+                    { text: "논리적 설득", type: "T", value: 1, emoji: "🧠" },
+                    { text: "상황에 맞게", type: "N", value: 0, emoji: "🔄" },
+                    { text: "기분 먼저", type: "F", value: -1, emoji: "🌸" }
                 ]
             },
             {
                 id: 17,
-                axis: 'JP',
-                question: "여행을 계획할 때 나는?",
+                axis: 'TF',
+                question: "결정을 내릴 때?",
                 options: [
-                    { text: "일정표 만들고 맛집 리스트 정리!", type: "J", key: 1, emoji: "✈️" },
-                    { text: "그냥 가서 발길 닿는 대로~", type: "P", key: -1, emoji: "🗺️" }
+                    { text: "사실/논리", type: "T", value: 1, emoji: "📐" },
+                    { text: "균형있게", type: "N", value: 0, emoji: "⚖️" },
+                    { text: "감정/관계", type: "F", value: -1, emoji: "❤️" }
                 ]
             },
             {
                 id: 18,
-                axis: 'JP',
-                question: "과제나 업무를 할 때 나는?",
+                axis: 'TF',
+                question: "실수한 친구에게?",
                 options: [
-                    { text: "미리미리 계획적으로 끝내기", type: "J", key: 1, emoji: "✅" },
-                    { text: "마감 임박할 때 집중력 폭발!", type: "P", key: -1, emoji: "🔥" }
+                    { text: "개선 방법", type: "T", value: 1, emoji: "👨‍🏫" },
+                    { text: "적절히", type: "N", value: 0, emoji: "👍" },
+                    { text: "격려/위로", type: "F", value: -1, emoji: "🤗" }
                 ]
             },
             {
                 id: 19,
-                axis: 'JP',
-                question: "주말 계획은?",
+                axis: 'TF',
+                question: "비판을 들으면?",
                 options: [
-                    { text: "미리 짜놓고 그대로 실행해", type: "J", key: 1, emoji: "📅" },
-                    { text: "그때그때 기분에 따라 정해", type: "P", key: -1, emoji: "🎲" }
+                    { text: "객관적 검토", type: "T", value: 1, emoji: "🎯" },
+                    { text: "상황에 따라", type: "N", value: 0, emoji: "🤔" },
+                    { text: "감정적 반응", type: "F", value: -1, emoji: "😢" }
                 ]
             },
             {
                 id: 20,
-                axis: 'JP',
-                question: "방 정리는?",
+                axis: 'TF',
+                question: "영화 선택 기준?",
                 options: [
-                    { text: "규칙적으로 깔끔하게 유지해", type: "J", key: 1, emoji: "🧹" },
-                    { text: "필요할 때만 정리해", type: "P", key: -1, emoji: "📦" }
+                    { text: "평점/리뷰", type: "T", value: 1, emoji: "⭐" },
+                    { text: "둘 다 고려", type: "N", value: 0, emoji: "🎬" },
+                    { text: "감정/느낌", type: "F", value: -1, emoji: "💝" }
+                ]
+            },
+
+            // J/P 축 (5문항) - 판단/인식
+            {
+                id: 21,
+                axis: 'JP',
+                question: "프로젝트 시작할 때?",
+                options: [
+                    { text: "계획부터", type: "J", value: 1, emoji: "📋" },
+                    { text: "대략 구상", type: "N", value: 0, emoji: "📝" },
+                    { text: "일단 시작", type: "P", value: -1, emoji: "🎨" }
+                ]
+            },
+            {
+                id: 22,
+                axis: 'JP',
+                question: "여행 스타일?",
+                options: [
+                    { text: "일정표 작성", type: "J", value: 1, emoji: "✈️" },
+                    { text: "핵심만 계획", type: "N", value: 0, emoji: "🗺️" },
+                    { text: "즉흥적으로", type: "P", value: -1, emoji: "🎒" }
+                ]
+            },
+            {
+                id: 23,
+                axis: 'JP',
+                question: "과제/업무 처리?",
+                options: [
+                    { text: "미리미리", type: "J", value: 1, emoji: "✅" },
+                    { text: "적당한 때", type: "N", value: 0, emoji: "⏰" },
+                    { text: "마감 직전", type: "P", value: -1, emoji: "🔥" }
+                ]
+            },
+            {
+                id: 24,
+                axis: 'JP',
+                question: "주말 계획?",
+                options: [
+                    { text: "미리 계획", type: "J", value: 1, emoji: "📅" },
+                    { text: "대략 생각", type: "N", value: 0, emoji: "🤷" },
+                    { text: "그때그때", type: "P", value: -1, emoji: "🎲" }
+                ]
+            },
+            {
+                id: 25,
+                axis: 'JP',
+                question: "정리 정돈?",
+                options: [
+                    { text: "항상 깔끔", type: "J", value: 1, emoji: "🧹" },
+                    { text: "적당히 유지", type: "N", value: 0, emoji: "📦" },
+                    { text: "필요할 때만", type: "P", value: -1, emoji: "🌀" }
                 ]
             }
         ];
@@ -943,30 +1017,38 @@
             }
         };
 
-        // App State
+        // 앱 상태
         let currentPage = 'home';
         let currentQuestion = 0;
         let answers = [];
         let scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
         let isPremium = false;
         let adCountdown = 15;
-        let isProcessing = false; // 중복 클릭 방지 플래그
+        let isProcessing = false;
 
-        // Calculate MBTI with scores
+        // MBTI 계산 (3점 척도)
         function calculateMBTI(userAnswers) {
-            // Reset scores
             scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
             
-            // Calculate scores with reverse-keyed items
             userAnswers.forEach((answer, index) => {
                 const question = questions[index];
-                const option = question.options.find(opt => opt.type === answer);
-                if (option) {
-                    scores[answer] += option.key;
+                const value = answer; // -1, 0, 또는 1
+                
+                if (question.axis === 'EI') {
+                    if (value > 0) scores.E += value;
+                    else if (value < 0) scores.I += Math.abs(value);
+                } else if (question.axis === 'SN') {
+                    if (value > 0) scores.N += value;
+                    else if (value < 0) scores.S += Math.abs(value);
+                } else if (question.axis === 'TF') {
+                    if (value > 0) scores.T += value;
+                    else if (value < 0) scores.F += Math.abs(value);
+                } else if (question.axis === 'JP') {
+                    if (value > 0) scores.J += value;
+                    else if (value < 0) scores.P += Math.abs(value);
                 }
             });
             
-            // Determine type
             const mbtiType = (
                 (scores.E >= scores.I ? 'E' : 'I') +
                 (scores.N >= scores.S ? 'N' : 'S') +
@@ -977,42 +1059,49 @@
             return mbtiType;
         }
 
-        // Get percentage for each dimension
+        // 퍼센트 계산
         function getPercentages() {
+            const total = {
+                EI: scores.E + scores.I,
+                SN: scores.S + scores.N,
+                TF: scores.T + scores.F,
+                JP: scores.J + scores.P
+            };
+
             return {
-                E: Math.round((scores.E / (scores.E + Math.abs(scores.I))) * 100) || 50,
-                I: Math.round((Math.abs(scores.I) / (scores.E + Math.abs(scores.I))) * 100) || 50,
-                S: Math.round((Math.abs(scores.S) / (Math.abs(scores.S) + scores.N)) * 100) || 50,
-                N: Math.round((scores.N / (Math.abs(scores.S) + scores.N)) * 100) || 50,
-                T: Math.round((scores.T / (scores.T + Math.abs(scores.F))) * 100) || 50,
-                F: Math.round((Math.abs(scores.F) / (scores.T + Math.abs(scores.F))) * 100) || 50,
-                J: Math.round((scores.J / (scores.J + Math.abs(scores.P))) * 100) || 50,
-                P: Math.round((Math.abs(scores.P) / (scores.J + Math.abs(scores.P))) * 100) || 50
+                E: Math.round((scores.E / total.EI) * 100) || 50,
+                I: Math.round((scores.I / total.EI) * 100) || 50,
+                S: Math.round((scores.S / total.SN) * 100) || 50,
+                N: Math.round((scores.N / total.SN) * 100) || 50,
+                T: Math.round((scores.T / total.TF) * 100) || 50,
+                F: Math.round((scores.F / total.TF) * 100) || 50,
+                J: Math.round((scores.J / total.JP) * 100) || 50,
+                P: Math.round((scores.P / total.JP) * 100) || 50
             };
         }
 
-        // Check if borderline (within 10% difference)
+        // 경계형 판정 (15% 이내 = 30% 범위)
         function isBorderline(type1Percent, type2Percent) {
-            return Math.abs(type1Percent - type2Percent) <= 20;
+            return Math.abs(type1Percent - type2Percent) <= 30;
         }
 
-        // Render Functions
+        // 렌더 함수들
         function renderHome() {
             return `
                 <div class="card">
                     <h1 class="home-title">🎨 귀여운 MBTI 테스트 ✨</h1>
-                    <p class="home-subtitle">나의 성격 유형을 재미있게 알아보세요!</p>
+                    <p class="home-subtitle">나의 성격 유형을 더 정확하게 알아보세요!</p>
                     
                     <div class="feature-cards">
                         <div class="feature-card">
                             <div class="feature-emoji">⚡</div>
                             <h3>빠른 테스트</h3>
-                            <p>20개 질문으로<br/>5분 완성!</p>
+                            <p>25개 질문으로<br/>5분 완성!</p>
                         </div>
                         <div class="feature-card">
                             <div class="feature-emoji">🎯</div>
-                            <h3>정확한 분석</h3>
-                            <p>16가지 유형의<br/>상세한 설명</p>
+                            <h3>정밀한 분석</h3>
+                            <p>3단계 선택으로<br/>정확도 향상!</p>
                         </div>
                         <div class="feature-card">
                             <div class="feature-emoji">💕</div>
@@ -1042,9 +1131,9 @@
                     <div class="question-number">Q${currentQuestion + 1}</div>
                     <h2 class="question-text">${question.question}</h2>
                     
-                    <div>
-                        ${question.options.map((option) => `
-                            <button class="option-btn" onclick="selectAnswer('${option.type}', event)">
+                    <div class="options-container">
+                        ${question.options.map((option, index) => `
+                            <button class="option-btn ${index === 1 ? 'neutral' : ''}" onclick="selectAnswer(${option.value}, event)">
                                 <span class="option-emoji">${option.emoji}</span>
                                 <span>${option.text}</span>
                             </button>
@@ -1135,7 +1224,6 @@
         function renderPremiumResult(mbtiType, result) {
             const percentages = getPercentages();
             
-            // Check borderlines
             const eiTypes = mbtiType[0] === 'E' ? ['E', 'I'] : ['I', 'E'];
             const snTypes = mbtiType[1] === 'S' ? ['S', 'N'] : ['N', 'S'];
             const tfTypes = mbtiType[2] === 'T' ? ['T', 'F'] : ['F', 'T'];
@@ -1276,7 +1364,6 @@
             `;
         }
 
-        // App Logic
         function render() {
             const app = document.getElementById('app');
             app.innerHTML = `<div class="container">${
@@ -1328,21 +1415,16 @@
             const interval = setInterval(() => {
                 adCountdown--;
                 
-                // Update only countdown number and progress bar (no flicker!)
                 const countdownEl = document.querySelector('.ad-countdown');
                 const progressEl = document.querySelector('.ad-progress-fill');
                 
                 if (adCountdown > 0) {
-                    // Update countdown number
                     if (countdownEl) countdownEl.textContent = adCountdown;
-                    
-                    // Update progress bar
                     if (progressEl) {
                         const progress = ((15 - adCountdown) / 15) * 100;
                         progressEl.style.width = progress + '%';
                     }
                 } else {
-                    // When countdown reaches 0, render completion screen
                     clearInterval(interval);
                     render();
                 }
@@ -1360,16 +1442,14 @@
             currentQuestion = 0;
             answers = [];
             scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
-            isProcessing = false; // 플래그 초기화
+            isProcessing = false;
             render();
         }
 
-        function selectAnswer(type, event) {
-            // 중복 클릭 방지
+        function selectAnswer(value, event) {
             if (isProcessing) return;
             isProcessing = true;
             
-            // 시각적 피드백: 선택된 버튼 강조
             if (event && event.currentTarget) {
                 const btn = event.currentTarget;
                 btn.style.borderColor = 'var(--primary)';
@@ -1377,18 +1457,17 @@
                 btn.style.transform = 'scale(0.98)';
             }
             
-            answers.push(type);
+            answers.push(value);
             
-            // Add a brief delay to show selection, then move to next question
             setTimeout(() => {
                 if (currentQuestion < questions.length - 1) {
                     currentQuestion++;
                     render();
-                    isProcessing = false; // 다음 문제로 넘어갔으니 잠금 해제
+                    isProcessing = false;
                 } else {
                     currentPage = 'result';
                     render();
-                    isProcessing = false; // 결과 페이지로 넘어갔으니 잠금 해제
+                    isProcessing = false;
                 }
             }, 150);
         }
@@ -1400,7 +1479,7 @@
             scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
             isPremium = false;
             adCountdown = 15;
-            isProcessing = false; // 플래그 초기화
+            isProcessing = false;
             render();
         }
 
@@ -1408,13 +1487,13 @@
             const result = mbtiResults[mbtiType];
             const percentages = getPercentages();
             const shareText = `나의 MBTI는 ${result.type} - ${result.title}! ${result.emoji}
-            
+
 E/I: ${percentages[mbtiType[0]]}%
 S/N: ${percentages[mbtiType[1]]}%
 T/F: ${percentages[mbtiType[2]]}%
 J/P: ${percentages[mbtiType[3]]}%
 
-귀여운 MBTI 테스트로 확인해보세요!`;
+귀여운 MBTI 테스트 (3점 척도 정밀 버전)`;
             
             if (navigator.share) {
                 navigator.share({
@@ -1427,7 +1506,6 @@ J/P: ${percentages[mbtiType[3]]}%
             }
         }
 
-        // Initialize
         render();
     </script>
 </body>
