@@ -950,6 +950,7 @@
         let scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
         let isPremium = false;
         let adCountdown = 15;
+        let isProcessing = false; // 중복 클릭 방지 플래그
 
         // Calculate MBTI with scores
         function calculateMBTI(userAnswers) {
@@ -1043,7 +1044,7 @@
                     
                     <div>
                         ${question.options.map((option) => `
-                            <button class="option-btn" onclick="selectAnswer('${option.type}')">
+                            <button class="option-btn" onclick="selectAnswer('${option.type}', event)">
                                 <span class="option-emoji">${option.emoji}</span>
                                 <span>${option.text}</span>
                             </button>
@@ -1359,10 +1360,23 @@
             currentQuestion = 0;
             answers = [];
             scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+            isProcessing = false; // 플래그 초기화
             render();
         }
 
-        function selectAnswer(type) {
+        function selectAnswer(type, event) {
+            // 중복 클릭 방지
+            if (isProcessing) return;
+            isProcessing = true;
+            
+            // 시각적 피드백: 선택된 버튼 강조
+            if (event && event.currentTarget) {
+                const btn = event.currentTarget;
+                btn.style.borderColor = 'var(--primary)';
+                btn.style.background = 'var(--background)';
+                btn.style.transform = 'scale(0.98)';
+            }
+            
             answers.push(type);
             
             // Add a brief delay to show selection, then move to next question
@@ -1370,11 +1384,13 @@
                 if (currentQuestion < questions.length - 1) {
                     currentQuestion++;
                     render();
+                    isProcessing = false; // 다음 문제로 넘어갔으니 잠금 해제
                 } else {
                     currentPage = 'result';
                     render();
+                    isProcessing = false; // 결과 페이지로 넘어갔으니 잠금 해제
                 }
-            }, 200);
+            }, 150);
         }
 
         function restart() {
@@ -1384,6 +1400,7 @@
             scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
             isPremium = false;
             adCountdown = 15;
+            isProcessing = false; // 플래그 초기화
             render();
         }
 
