@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🎨 귀여운 MBTI 테스트</title>
     <style>
         * {
@@ -27,6 +27,8 @@
             line-height: 1.6;
             min-height: 100vh;
             overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
+            -webkit-touch-callout: none;
         }
 
         .container {
@@ -131,6 +133,8 @@
             margin: 0 auto;
             box-shadow: 0 10px 30px rgba(255, 107, 157, 0.3);
             transition: all 0.3s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .btn:hover {
@@ -191,6 +195,10 @@
             transition: all 0.3s;
             margin-bottom: 15px;
             text-align: left;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         .option-btn:hover {
@@ -409,6 +417,8 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .btn-secondary:hover {
@@ -504,6 +514,8 @@
             margin: 40px auto 0;
             box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
             transition: all 0.3s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .premium-unlock-btn:hover {
