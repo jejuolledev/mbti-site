@@ -564,7 +564,7 @@
 
         @media (max-width: 768px) {
             .card {
-                padding: 40px 30px;
+                padding: 40px 20px;
             }
             .home-title {
                 font-size: 2.5rem;
@@ -578,13 +578,20 @@
             .action-buttons {
                 flex-direction: column;
             }
+            /* 모바일에서도 데스크톱과 동일한 가로 레이아웃 유지 */
             .score-bar-container {
-                flex-direction: column;
-                height: auto;
+                gap: 5px;
             }
             .score-label {
-                min-width: auto;
-                width: 100%;
+                min-width: 60px;
+                font-size: 0.85rem;
+            }
+            .score-bar-fill {
+                font-size: 0.9rem;
+                padding-right: 10px;
+            }
+            .score-header {
+                font-size: 0.9rem;
             }
             .ad-content {
                 padding: 40px 30px;
