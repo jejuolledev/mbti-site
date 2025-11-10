@@ -212,6 +212,10 @@
             transform: scale(0.98);
         }
 
+        .option-btn:focus {
+            outline: none;
+        }
+
         /* 선택된 버튼 스타일 (CSS 클래스로 관리) */
         .option-btn.selected {
             border-color: var(--primary) !important;
@@ -1123,7 +1127,7 @@
             const progress = ((currentQuestion + 1) / questions.length) * 100;
             
             return `
-                <div class="card">
+                <div class="card" data-question="${currentQuestion}">
                     <div class="progress-bar">
                         <div class="progress-fill" style="width: ${progress}%"></div>
                     </div>
@@ -1134,7 +1138,7 @@
                     
                     <div class="options-container">
                         ${question.options.map((option, index) => `
-                            <button class="option-btn" onclick="selectAnswer(${option.value}, event)">
+                            <button class="option-btn" data-index="${index}" onclick="selectAnswer(${option.value}, event)">
                                 <span class="option-emoji">${option.emoji}</span>
                                 <span>${option.text}</span>
                             </button>
@@ -1367,26 +1371,23 @@
 
         function render() {
             const app = document.getElementById('app');
+            
+            // ✅ 중요: DOM 교체 전에 기존 버튼 정리 (모바일 Safari 대응)
+            if (currentPage === 'test') {
+                const oldButtons = document.querySelectorAll('.option-btn');
+                oldButtons.forEach(btn => {
+                    btn.classList.remove('selected');
+                    btn.removeAttribute('style');
+                });
+            }
+            
+            // DOM 완전 교체
             app.innerHTML = `<div class="container">${
                 currentPage === 'home' ? renderHome() :
                 currentPage === 'test' ? renderTest() :
                 currentPage === 'ad' ? renderAdModal() :
                 renderResult()
             }</div>`;
-            
-            // 모든 선택지 초기화 (CSS 클래스 및 inline style 제거)
-            if (currentPage === 'test') {
-                // DOM 업데이트 후 다음 프레임에서 확실히 초기화
-                requestAnimationFrame(() => {
-                    const buttons = document.querySelectorAll('.option-btn');
-                    buttons.forEach(btn => {
-                        // CSS 클래스 제거 (가장 중요!)
-                        btn.classList.remove('selected');
-                        // inline style도 혹시 모를 경우 대비해서 제거
-                        btn.removeAttribute('style');
-                    });
-                });
-            }
         }
 
         function renderAdModal() {
@@ -1465,24 +1466,28 @@
             if (isProcessing) return;
             isProcessing = true;
             
-            // CSS 클래스로 시각적 피드백 (inline style 사용 안 함)
+            // CSS 클래스로 시각적 피드백
             if (event && event.currentTarget) {
-                event.currentTarget.classList.add('selected');
+                const btn = event.currentTarget;
+                btn.classList.add('selected');
+                // 모바일 Safari: focus/active 상태 제거
+                btn.blur();
             }
             
             answers.push(value);
             
+            // 모바일 Safari를 위해 조금 더 긴 지연 (200ms)
             setTimeout(() => {
                 if (currentQuestion < questions.length - 1) {
                     currentQuestion++;
-                    render(); // render()에서 모든 버튼 초기화됨
+                    render();
                     isProcessing = false;
                 } else {
                     currentPage = 'result';
                     render();
                     isProcessing = false;
                 }
-            }, 150);
+            }, 200);
         }
 
         function restart() {
