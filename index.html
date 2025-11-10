@@ -1368,6 +1368,20 @@
                 currentPage === 'ad' ? renderAdModal() :
                 renderResult()
             }</div>`;
+            
+            // 모든 선택지 초기화 (3번 문제부터 발생하는 스타일 잔존 방지)
+            if (currentPage === 'test') {
+                // requestAnimationFrame 사용으로 DOM 업데이트 후 확실히 초기화
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        const buttons = document.querySelectorAll('.option-btn');
+                        buttons.forEach(btn => {
+                            // inline style 완전 제거
+                            btn.removeAttribute('style');
+                        });
+                    });
+                });
+            }
         }
 
         function renderAdModal() {
@@ -1457,14 +1471,6 @@
             answers.push(value);
             
             setTimeout(() => {
-                // 모바일 Safari inline style 초기화 (캐싱 방지)
-                if (event && event.currentTarget) {
-                    const btn = event.currentTarget;
-                    btn.style.borderColor = '';
-                    btn.style.background = '';
-                    btn.style.transform = '';
-                }
-                
                 if (currentQuestion < questions.length - 1) {
                     currentQuestion++;
                     render();
