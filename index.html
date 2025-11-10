@@ -212,7 +212,12 @@
             transform: scale(0.98);
         }
 
-        /* 모든 선택지 테두리 통일 - neutral 스타일 제거 */
+        /* 선택된 버튼 스타일 (CSS 클래스로 관리) */
+        .option-btn.selected {
+            border-color: var(--primary) !important;
+            background: var(--background) !important;
+            transform: scale(0.98) !important;
+        }
 
         .option-emoji {
             font-size: 2rem;
@@ -1129,7 +1134,7 @@
                     
                     <div class="options-container">
                         ${question.options.map((option, index) => `
-                            <button class="option-btn ${index === 1 ? 'neutral' : ''}" onclick="selectAnswer(${option.value}, event)">
+                            <button class="option-btn" onclick="selectAnswer(${option.value}, event)">
                                 <span class="option-emoji">${option.emoji}</span>
                                 <span>${option.text}</span>
                             </button>
@@ -1369,16 +1374,16 @@
                 renderResult()
             }</div>`;
             
-            // 모든 선택지 초기화 (3번 문제부터 발생하는 스타일 잔존 방지)
+            // 모든 선택지 초기화 (CSS 클래스 및 inline style 제거)
             if (currentPage === 'test') {
-                // requestAnimationFrame 사용으로 DOM 업데이트 후 확실히 초기화
+                // DOM 업데이트 후 다음 프레임에서 확실히 초기화
                 requestAnimationFrame(() => {
-                    requestAnimationFrame(() => {
-                        const buttons = document.querySelectorAll('.option-btn');
-                        buttons.forEach(btn => {
-                            // inline style 완전 제거
-                            btn.removeAttribute('style');
-                        });
+                    const buttons = document.querySelectorAll('.option-btn');
+                    buttons.forEach(btn => {
+                        // CSS 클래스 제거 (가장 중요!)
+                        btn.classList.remove('selected');
+                        // inline style도 혹시 모를 경우 대비해서 제거
+                        btn.removeAttribute('style');
                     });
                 });
             }
@@ -1460,12 +1465,9 @@
             if (isProcessing) return;
             isProcessing = true;
             
-            // 시각적 피드백
+            // CSS 클래스로 시각적 피드백 (inline style 사용 안 함)
             if (event && event.currentTarget) {
-                const btn = event.currentTarget;
-                btn.style.borderColor = 'var(--primary)';
-                btn.style.background = 'var(--background)';
-                btn.style.transform = 'scale(0.98)';
+                event.currentTarget.classList.add('selected');
             }
             
             answers.push(value);
@@ -1473,7 +1475,7 @@
             setTimeout(() => {
                 if (currentQuestion < questions.length - 1) {
                     currentQuestion++;
-                    render();
+                    render(); // render()에서 모든 버튼 초기화됨
                     isProcessing = false;
                 } else {
                     currentPage = 'result';
