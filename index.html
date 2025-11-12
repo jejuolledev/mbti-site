@@ -194,7 +194,7 @@
             gap: 15px;
             font-size: 1.05rem;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: transform 0.3s; /* transform만 유지 */
             text-align: left;
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
@@ -1372,7 +1372,7 @@
         function render() {
             const app = document.getElementById('app');
             
-            // ✅ 중요: DOM 교체 전에 기존 버튼 정리 (모바일 Safari 대응)
+            // ✅ 1단계: DOM 교체 전에 기존 버튼 정리
             if (currentPage === 'test') {
                 const oldButtons = document.querySelectorAll('.option-btn');
                 oldButtons.forEach(btn => {
@@ -1381,7 +1381,13 @@
                 });
             }
             
-            // DOM 완전 교체
+            // ✅ 2단계: 완전히 비우기 (강제 리플로우)
+            app.innerHTML = '';
+            
+            // ✅ 3단계: 강제 리플로우 - Safari 캐싱 초기화
+            void app.offsetHeight; // 이 한 줄이 핵심!
+            
+            // ✅ 4단계: 새 DOM 삽입
             app.innerHTML = `<div class="container">${
                 currentPage === 'home' ? renderHome() :
                 currentPage === 'test' ? renderTest() :
