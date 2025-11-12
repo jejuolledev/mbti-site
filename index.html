@@ -194,7 +194,7 @@
             gap: 15px;
             font-size: 1.05rem;
             cursor: pointer;
-            transition: transform 0.3s; /* transform만 유지 */
+            transition: transform 0.2s; /* transform만 애니메이션 */
             text-align: left;
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
@@ -216,11 +216,12 @@
             outline: none;
         }
 
-        /* 선택된 버튼 스타일 (CSS 클래스로 관리) */
+        /* 선택된 버튼 스타일 - !important로 강제 적용 */
         .option-btn.selected {
             border-color: var(--primary) !important;
             background: var(--background) !important;
             transform: scale(0.98) !important;
+            transition: none !important; /* transition 완전 제거 */
         }
 
         .option-emoji {
@@ -1372,19 +1373,20 @@
         function render() {
             const app = document.getElementById('app');
             
-            // Safari 캐싱 완전 초기화
-            if (currentPage === 'test') {
-                const oldButtons = document.querySelectorAll('.option-btn');
-                oldButtons.forEach(btn => {
-                    btn.classList.remove('selected');
-                    btn.style.cssText = '';
-                    btn.blur();
-                });
-            }
+            // Safari 캐싱 완전 초기화 - 1차
+            const oldButtons = document.querySelectorAll('.option-btn');
+            oldButtons.forEach(btn => {
+                btn.classList.remove('selected');
+                btn.removeAttribute('style');
+                btn.style.cssText = '';
+                btn.blur();
+            });
             
+            // DOM 완전 초기화
             app.innerHTML = '';
-            void app.offsetWidth;
+            void app.offsetWidth; // 리플로우 강제
             
+            // 새 DOM 삽입
             app.innerHTML = `<div class="container">${
                 currentPage === 'home' ? renderHome() :
                 currentPage === 'test' ? renderTest() :
@@ -1392,15 +1394,20 @@
                 renderResult()
             }</div>`;
             
-            // 렌더링 후 버튼 초기화 (Safari 전용)
+            // 렌더링 후 모든 버튼 강제 초기화 - 2차 (Safari 전용)
             if (currentPage === 'test') {
-                setTimeout(() => {
-                    const buttons = document.querySelectorAll('.option-btn');
-                    buttons.forEach(btn => {
+                // 즉시 초기화
+                requestAnimationFrame(() => {
+                    const newButtons = document.querySelectorAll('.option-btn');
+                    newButtons.forEach(btn => {
                         btn.classList.remove('selected');
+                        btn.removeAttribute('style');
                         btn.style.cssText = '';
+                        btn.style.border = ''; // border 강제 초기화
+                        btn.style.background = ''; // background 강제 초기화
+                        btn.style.transform = ''; // transform 강제 초기화
                     });
-                }, 0);
+                });
             }
         }
 
@@ -1480,6 +1487,7 @@
             if (isProcessing) return;
             isProcessing = true;
             
+            // 선택 피드백
             if (event && event.currentTarget) {
                 const btn = event.currentTarget;
                 btn.classList.add('selected');
@@ -1490,9 +1498,16 @@
             answers.push(value);
             
             setTimeout(() => {
-                document.querySelectorAll('.option-btn').forEach(b => {
+                // 모든 버튼 상태 강제 초기화
+                const allButtons = document.querySelectorAll('.option-btn');
+                allButtons.forEach(b => {
                     b.classList.remove('selected');
+                    b.removeAttribute('style');
                     b.style.cssText = '';
+                    b.style.border = '';
+                    b.style.background = '';
+                    b.style.transform = '';
+                    b.style.pointerEvents = '';
                     b.blur();
                 });
                 
@@ -1505,7 +1520,7 @@
                     render();
                     isProcessing = false;
                 }
-            }, 250);
+            }, 300); // 300ms로 증가
         }
 
         function restart() {
