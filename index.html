@@ -1400,14 +1400,31 @@
                 requestAnimationFrame(() => {
                     const newButtons = document.querySelectorAll('.option-btn');
                     newButtons.forEach(btn => {
+                        // 클래스 제거
                         btn.classList.remove('selected');
+                        
+                        // 모든 스타일 제거
                         btn.removeAttribute('style');
                         btn.style.cssText = '';
-                        btn.style.border = ''; // border 강제 초기화
-                        btn.style.background = ''; // background 강제 초기화
-                        btn.style.transform = ''; // transform 강제 초기화
+                        
+                        // 초기 상태 명시적 설정
+                        btn.style.background = 'white';
+                        btn.style.border = '3px solid #F0F0F0';
+                        btn.style.transform = 'none';
+                        btn.style.pointerEvents = 'auto';
                     });
                 });
+                
+                // 추가 딜레이 후 다시 한번 확인
+                setTimeout(() => {
+                    const buttons = document.querySelectorAll('.option-btn');
+                    buttons.forEach(btn => {
+                        btn.classList.remove('selected');
+                        btn.style.background = 'white';
+                        btn.style.border = '3px solid #F0F0F0';
+                        btn.style.transform = 'none';
+                    });
+                }, 50);
             }
         }
 
@@ -1501,13 +1518,18 @@
                 // 모든 버튼 상태 강제 초기화
                 const allButtons = document.querySelectorAll('.option-btn');
                 allButtons.forEach(b => {
+                    // 클래스 제거
                     b.classList.remove('selected');
+                    
+                    // 스타일 완전 제거
                     b.removeAttribute('style');
                     b.style.cssText = '';
-                    b.style.border = '';
-                    b.style.background = '';
-                    b.style.transform = '';
-                    b.style.pointerEvents = '';
+                    
+                    // 초기 상태 명시적 설정
+                    b.style.background = 'white';
+                    b.style.border = '3px solid #F0F0F0';
+                    b.style.transform = 'none';
+                    b.style.pointerEvents = 'auto';
                     b.blur();
                 });
                 
@@ -1567,7 +1589,11 @@ J/P: ${percentages[mbtiType[3]]}%
         window.addEventListener('load', function() {
             document.querySelectorAll('.option-btn').forEach(btn => {
                 btn.classList.remove('selected');
+                btn.removeAttribute('style');
                 btn.style.cssText = '';
+                btn.style.background = 'white';
+                btn.style.border = '3px solid #F0F0F0';
+                btn.style.transform = 'none';
                 btn.blur();
             });
         });
