@@ -1372,28 +1372,36 @@
         function render() {
             const app = document.getElementById('app');
             
-            // ✅ 1단계: DOM 교체 전에 기존 버튼 정리
+            // Safari 캐싱 완전 초기화
             if (currentPage === 'test') {
                 const oldButtons = document.querySelectorAll('.option-btn');
                 oldButtons.forEach(btn => {
                     btn.classList.remove('selected');
-                    btn.removeAttribute('style');
+                    btn.style.cssText = '';
+                    btn.blur();
                 });
             }
             
-            // ✅ 2단계: 완전히 비우기 (강제 리플로우)
             app.innerHTML = '';
+            void app.offsetWidth;
             
-            // ✅ 3단계: 강제 리플로우 - Safari 캐싱 초기화
-            void app.offsetHeight; // 이 한 줄이 핵심!
-            
-            // ✅ 4단계: 새 DOM 삽입
             app.innerHTML = `<div class="container">${
                 currentPage === 'home' ? renderHome() :
                 currentPage === 'test' ? renderTest() :
                 currentPage === 'ad' ? renderAdModal() :
                 renderResult()
             }</div>`;
+            
+            // 렌더링 후 버튼 초기화 (Safari 전용)
+            if (currentPage === 'test') {
+                setTimeout(() => {
+                    const buttons = document.querySelectorAll('.option-btn');
+                    buttons.forEach(btn => {
+                        btn.classList.remove('selected');
+                        btn.style.cssText = '';
+                    });
+                }, 0);
+            }
         }
 
         function renderAdModal() {
@@ -1472,18 +1480,22 @@
             if (isProcessing) return;
             isProcessing = true;
             
-            // CSS 클래스로 시각적 피드백
             if (event && event.currentTarget) {
                 const btn = event.currentTarget;
                 btn.classList.add('selected');
-                // 모바일 Safari: focus/active 상태 제거
                 btn.blur();
+                btn.style.pointerEvents = 'none';
             }
             
             answers.push(value);
             
-            // 모바일 Safari를 위해 조금 더 긴 지연 (200ms)
             setTimeout(() => {
+                document.querySelectorAll('.option-btn').forEach(b => {
+                    b.classList.remove('selected');
+                    b.style.cssText = '';
+                    b.blur();
+                });
+                
                 if (currentQuestion < questions.length - 1) {
                     currentQuestion++;
                     render();
@@ -1493,7 +1505,7 @@
                     render();
                     isProcessing = false;
                 }
-            }, 200);
+            }, 250);
         }
 
         function restart() {
@@ -1529,6 +1541,21 @@ J/P: ${percentages[mbtiType[3]]}%
                 alert('결과가 클립보드에 복사되었습니다! 🎉');
             }
         }
+
+        // Safari bfcache 방지
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                restart();
+            }
+        });
+        
+        window.addEventListener('load', function() {
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+                btn.style.cssText = '';
+                btn.blur();
+            });
+        });
 
         render();
     </script>
