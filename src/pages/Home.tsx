@@ -24,7 +24,17 @@ const Home: React.FC<HomeProps> = ({ onStart }) => {
             <span className="title-emoji">✨</span>
           </h1>
           <p className="subtitle">나의 성격 유형을 재미있게 알아보세요!</p>
-          
+
+          <button className="start-button" onClick={onStart}>
+            <span className="button-emoji">🌈</span>
+            <span className="button-text">테스트 시작하기</span>
+            <span className="button-emoji">✨</span>
+          </button>
+
+          <div className="info-text">
+            <p>💡 솔직하게 답변할수록 정확해요!</p>
+          </div>
+
           <div className="feature-cards">
             <div className="feature-card">
               <div className="card-emoji">⚡</div>
@@ -41,15 +51,6 @@ const Home: React.FC<HomeProps> = ({ onStart }) => {
               <h3>궁합 체크</h3>
               <p>나와 잘 맞는<br/>유형 찾기</p>
             </div>
-          </div>
-
-          <button className="start-button" onClick={onStart}>
-            <span className="button-text">테스트 시작하기</span>
-            <span className="button-emoji">🚀</span>
-          </button>
-
-          <div className="info-text">
-            <p>💡 솔직하게 답변할수록 정확해요!</p>
           </div>
         </div>
       </div>
