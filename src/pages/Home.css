@@ -101,7 +101,7 @@
 .subtitle {
   font-size: 1.3rem;
   color: var(--text-light);
-  margin-bottom: 50px;
+  margin-bottom: 30px;
   animation: slideIn 1s ease-out;
 }
 
@@ -109,7 +109,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 20px;
-  margin-bottom: 50px;
+  margin-top: 40px;
 }
 
 .feature-card {
@@ -178,7 +178,7 @@
 }
 
 .info-text {
-  margin-top: 30px;
+  margin-top: 15px;
   animation: fadeIn 1.5s ease-out;
 }
 

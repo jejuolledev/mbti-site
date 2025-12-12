@@ -4,6 +4,40 @@
   align-items: center;
   justify-content: center;
   padding: 40px 20px;
+  position: relative;
+  background: linear-gradient(135deg, #FFF5F7 0%, #E8F4FD 50%, #FCE7F3 100%);
+}
+
+/* 홈으로 버튼 */
+.home-button {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background: white;
+  border: 2px solid var(--accent);
+  padding: 10px 18px;
+  border-radius: 25px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--primary);
+  box-shadow: 0 4px 15px rgba(255, 107, 157, 0.2);
+  transition: var(--transition);
+  z-index: 100;
+}
+
+.home-button:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 157, 0.35);
+}
+
+.home-button span:first-child {
+  font-size: 1.1rem;
 }
 
 .test-card {
@@ -11,103 +45,181 @@
   width: 100%;
   background: white;
   padding: 50px;
-  border-radius: 30px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  border-radius: 35px;
+  box-shadow: 0 20px 60px rgba(255, 182, 193, 0.25);
   animation: fadeIn 0.5s ease-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.test-card::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 150px;
+  height: 150px;
+  background: linear-gradient(135deg, #FFE5EC 0%, #FFC0CB 100%);
+  border-radius: 50%;
+  opacity: 0.5;
+}
+
+.test-card::after {
+  content: '';
+  position: absolute;
+  bottom: -30px;
+  left: -30px;
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(135deg, #E8F4FD 0%, #B8E0FF 100%);
+  border-radius: 50%;
+  opacity: 0.5;
 }
 
 .progress-section {
-  margin-bottom: 40px;
+  margin-bottom: 35px;
+  position: relative;
+  z-index: 1;
 }
 
 .progress-bar {
   width: 100%;
-  height: 12px;
-  background: #F0F0F0;
+  height: 14px;
+  background: linear-gradient(90deg, #FFE5EC 0%, #E8F4FD 100%);
   border-radius: 10px;
   overflow: hidden;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+  background: linear-gradient(90deg, #FF9EC4 0%, #FF6B9D 50%, #C44569 100%);
   border-radius: 10px;
   transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
   animation: shimmer 2s infinite;
-  background-size: 200% 100%;
 }
 
 .progress-text {
   text-align: right;
   color: var(--primary);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+}
+
+.progress-text::before {
+  content: '✨';
+  font-size: 0.9rem;
 }
 
 .question-section {
-  margin-bottom: 40px;
+  margin-bottom: 35px;
   animation: slideIn 0.5s ease-out;
+  position: relative;
+  z-index: 1;
 }
 
 .question-number {
-  display: inline-block;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #FF9EC4 0%, #FF6B9D 100%);
   color: white;
-  padding: 8px 20px;
-  border-radius: 20px;
-  font-weight: 600;
-  font-size: 0.9rem;
+  padding: 10px 22px;
+  border-radius: 25px;
+  font-weight: 700;
+  font-size: 0.95rem;
   margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
 }
 
 .question-text {
-  font-size: 1.8rem;
+  font-size: 1.7rem;
   color: var(--text-dark);
-  line-height: 1.5;
+  line-height: 1.6;
   font-weight: 600;
+  position: relative;
 }
 
 .options-section {
   display: flex;
   flex-direction: column;
   gap: 15px;
-  margin-bottom: 30px;
+  margin-bottom: 25px;
+  position: relative;
+  z-index: 1;
 }
 
 .option-button {
   background: white;
-  border: 3px solid #F0F0F0;
-  padding: 25px 30px;
-  border-radius: 20px;
+  border: 3px solid #FFE5EC;
+  padding: 22px 28px;
+  border-radius: 22px;
   display: flex;
   align-items: center;
-  gap: 20px;
-  font-size: 1.1rem;
+  gap: 18px;
+  font-size: 1.05rem;
   color: var(--text-dark);
-  transition: var(--transition);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+
+.option-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 182, 193, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.option-button:hover::before {
+  left: 100%;
 }
 
 .option-button:hover {
-  border-color: var(--accent);
-  background: var(--background);
-  transform: translateX(10px);
-  box-shadow: 0 10px 30px var(--shadow);
+  border-color: #FFB6C1;
+  background: linear-gradient(135deg, #FFF5F7 0%, #FFE5EC 100%);
+  transform: translateX(8px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(255, 182, 193, 0.35);
 }
 
 .option-button.selected {
   border-color: var(--primary);
-  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  background: linear-gradient(135deg, #FF9EC4 0%, #FF6B9D 100%);
   color: white;
-  transform: scale(1.05);
-  box-shadow: 0 15px 40px var(--shadow);
+  transform: scale(1.03);
+  box-shadow: 0 12px 35px rgba(255, 107, 157, 0.4);
+}
+
+.option-button.selected .option-emoji {
+  animation: bounce 0.5s ease-out;
 }
 
 .option-emoji {
-  font-size: 2.5rem;
+  font-size: 2.2rem;
   flex-shrink: 0;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .option-text {
@@ -117,58 +229,112 @@
 }
 
 .prev-button {
-  background: transparent;
+  background: linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%);
   color: var(--text-light);
-  padding: 12px 25px;
-  border-radius: 15px;
+  padding: 14px 28px;
+  border-radius: 20px;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
 }
 
 .prev-button:hover {
-  background: var(--background);
+  background: linear-gradient(135deg, #FFE5EC 0%, #FFC0CB 100%);
   color: var(--primary);
   transform: translateX(-5px);
+  box-shadow: 0 4px 15px rgba(255, 182, 193, 0.3);
 }
 
 /* 반응형 디자인 */
 @media (max-width: 768px) {
+  .test-container {
+    padding: 80px 15px 30px;
+  }
+
+  .home-button {
+    top: 15px;
+    left: 15px;
+    padding: 8px 14px;
+    font-size: 0.85rem;
+  }
+
   .test-card {
     padding: 35px 25px;
-    border-radius: 25px;
+    border-radius: 28px;
   }
 
   .question-text {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
   }
 
   .option-button {
-    padding: 20px 20px;
+    padding: 18px 20px;
     font-size: 1rem;
+    border-radius: 18px;
   }
 
   .option-emoji {
-    font-size: 2rem;
+    font-size: 1.9rem;
   }
 }
 
 @media (max-width: 480px) {
+  .test-container {
+    padding: 70px 12px 20px;
+  }
+
+  .home-button {
+    top: 12px;
+    left: 12px;
+    padding: 7px 12px;
+    font-size: 0.8rem;
+  }
+
   .test-card {
-    padding: 25px 20px;
+    padding: 25px 18px;
+    border-radius: 22px;
+  }
+
+  .test-card::before {
+    width: 100px;
+    height: 100px;
+    top: -30px;
+    right: -30px;
+  }
+
+  .test-card::after {
+    width: 70px;
+    height: 70px;
+    bottom: -20px;
+    left: -20px;
   }
 
   .question-text {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
   }
 
   .option-button {
-    padding: 18px 15px;
-    font-size: 0.95rem;
-    gap: 15px;
+    padding: 16px 14px;
+    font-size: 0.92rem;
+    gap: 14px;
+    border-radius: 16px;
   }
 
   .option-emoji {
-    font-size: 1.8rem;
+    font-size: 1.7rem;
+  }
+
+  .progress-bar {
+    height: 12px;
+  }
+
+  .question-number {
+    padding: 8px 18px;
+    font-size: 0.85rem;
   }
 }

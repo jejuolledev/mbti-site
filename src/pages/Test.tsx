@@ -5,9 +5,10 @@ import './Test.css';
 
 interface TestProps {
   onComplete: (answers: Answer[]) => void;
+  onGoHome: () => void;
 }
 
-const Test: React.FC<TestProps> = ({ onComplete }) => {
+const Test: React.FC<TestProps> = ({ onComplete, onGoHome }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
@@ -46,6 +47,10 @@ const Test: React.FC<TestProps> = ({ onComplete }) => {
 
   return (
     <div className="test-container">
+      <button className="home-button" onClick={onGoHome}>
+        <span>🏠</span>
+        <span>홈으로</span>
+      </button>
       <div className="test-card">
         <div className="progress-section">
           <div className="progress-bar">

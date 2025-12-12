@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Home from './pages/Home';
 import Test from './pages/Test';
 import Result from './pages/Result';
@@ -9,7 +9,7 @@ type Page = 'home' | 'test' | 'result';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
-  const [answers, setAnswers] = useState<Answer[]>([]);
+  const [, setAnswers] = useState<Answer[]>([]);
   const [mbtiType, setMbtiType] = useState<string>('');
 
   const calculateMBTI = (userAnswers: Answer[]): string => {
@@ -52,10 +52,16 @@ function App() {
     setMbtiType('');
   };
 
+  const handleGoHome = () => {
+    setCurrentPage('home');
+    setAnswers([]);
+    setMbtiType('');
+  };
+
   return (
     <div className="app">
       {currentPage === 'home' && <Home onStart={handleStart} />}
-      {currentPage === 'test' && <Test onComplete={handleComplete} />}
+      {currentPage === 'test' && <Test onComplete={handleComplete} onGoHome={handleGoHome} />}
       {currentPage === 'result' && <Result mbtiType={mbtiType} onRestart={handleRestart} />}
     </div>
   );
