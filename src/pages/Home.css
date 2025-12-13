@@ -1,367 +1,106 @@
+/* Basic Setup & Fonts */
 .home-container {
   min-height: 100vh;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  padding: 30px 20px;
+  padding: 20px;
+  background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%);
   position: relative;
   overflow: hidden;
-  background: linear-gradient(180deg, #FFF0F5 0%, #FFE4EC 30%, #E8F4FD 70%, #F0E6FF 100%);
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
 }
 
-.home-content {
-  max-width: 800px;
-  width: 100%;
-  animation: fadeIn 0.8s ease-out;
-}
-
-/* 귀여운 떠다니는 장식들 */
-.emoji-decoration {
-  position: fixed;
+/* Animated Background Elements */
+.home-container::before {
+  content: '';
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  background-image:
+    radial-gradient(2px 2px at 20% 30%, white, transparent),
+    radial-gradient(2px 2px at 60% 70%, white, transparent),
+    radial-gradient(1px 1px at 50% 50%, white, transparent),
+    radial-gradient(2.5px 2.5px at 80% 10%, white, transparent),
+    radial-gradient(2px 2px at 90% 60%, white, transparent),
+    radial-gradient(1px 1px at 33% 80%, white, transparent);
+  background-size: 200% 200%;
+  background-position: 0% 0%;
+  animation: twinkle 10s ease-in-out infinite;
+  opacity: 0.8;
   pointer-events: none;
-  z-index: 0;
 }
 
-.float-emoji {
+/* Floating Emojis as decoration */
+.home-container::after {
+  content: '✨';
   position: absolute;
-  font-size: 2.5rem;
-  opacity: 0.4;
-  animation: float 8s ease-in-out infinite;
-  filter: drop-shadow(0 2px 4px rgba(255, 182, 193, 0.3));
-}
-
-.float-emoji:nth-child(1) {
-  top: 8%;
-  left: 8%;
-  animation-delay: 0s;
-  font-size: 2.2rem;
-}
-
-.float-emoji:nth-child(2) {
   top: 15%;
-  right: 10%;
-  animation-delay: 1.5s;
-  font-size: 2.8rem;
-}
-
-.float-emoji:nth-child(3) {
-  bottom: 25%;
-  left: 12%;
-  animation-delay: 3s;
+  left: 10%;
   font-size: 2rem;
+  animation: float 4s ease-in-out infinite;
+  opacity: 0.8;
+  pointer-events: none;
 }
 
-.float-emoji:nth-child(4) {
-  bottom: 35%;
-  right: 8%;
-  animation-delay: 4.5s;
-  font-size: 2.4rem;
-}
-
-.float-emoji:nth-child(5) {
-  top: 45%;
-  left: 5%;
-  animation-delay: 2s;
-  font-size: 1.8rem;
-}
-
-@keyframes float {
+@keyframes twinkle {
 
   0%,
   100% {
-    transform: translateY(0) rotate(0deg) scale(1);
-  }
-
-  25% {
-    transform: translateY(-15px) rotate(5deg) scale(1.05);
+    opacity: 0.6;
   }
 
   50% {
-    transform: translateY(-25px) rotate(-3deg) scale(1.1);
-  }
-
-  75% {
-    transform: translateY(-10px) rotate(3deg) scale(1.03);
+    opacity: 1;
   }
 }
 
-.hero-section {
-  position: relative;
-  z-index: 1;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(10px);
+/* Glassmorphism Main Wrapper */
+.glass-wrapper {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  padding: 3rem 2rem;
   border-radius: 40px;
-  padding: 35px 30px 40px;
   box-shadow:
-    0 20px 60px rgba(255, 182, 193, 0.25),
-    0 0 0 1px rgba(255, 182, 193, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  border: 2px solid rgba(255, 200, 216, 0.4);
-}
-
-/* 귀여운 장식 요소 */
-.hero-section::before {
-  content: '🎀';
-  position: absolute;
-  top: -18px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 2.2rem;
-  filter: drop-shadow(0 4px 8px rgba(255, 107, 157, 0.3));
-  animation: swing 3s ease-in-out infinite;
-}
-
-@keyframes swing {
-
-  0%,
-  100% {
-    transform: translateX(-50%) rotate(-5deg);
-  }
-
-  50% {
-    transform: translateX(-50%) rotate(5deg);
-  }
-}
-
-.main-title {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 12px;
-  animation: titleBounce 3s ease-in-out infinite;
-}
-
-@keyframes titleBounce {
-
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-8px);
-  }
-}
-
-.title-emoji {
-  font-size: 2.5rem;
-  filter: drop-shadow(0 2px 4px rgba(255, 107, 157, 0.3));
-}
-
-.title-text {
-  font-size: 3rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #FF6B9D 0%, #FF8FAB 30%, #C44569 70%, #FF6B9D 100%);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: gradientShift 4s ease-in-out infinite;
-  text-shadow: none;
-  letter-spacing: -1px;
-}
-
-@keyframes gradientShift {
-
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
-.subtitle {
-  font-size: 1.15rem;
-  color: #8B7B8B;
-  margin-bottom: 25px;
-  animation: slideIn 1s ease-out;
-  font-weight: 500;
-}
-
-/* 테스트 시작 버튼 - 상단에 눈에 띄게 */
-.start-button {
-  background: linear-gradient(135deg, #FF6B9D 0%, #FF8FAB 50%, #FF6B9D 100%);
-  background-size: 200% 200%;
-  color: white;
-  padding: 20px 45px;
-  border-radius: 50px;
-  font-size: 1.25rem;
-  font-weight: 700;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  box-shadow:
-    0 8px 25px rgba(255, 107, 157, 0.4),
-    0 4px 10px rgba(255, 107, 157, 0.2),
-    inset 0 2px 0 rgba(255, 255, 255, 0.3);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  animation: buttonPulse 2s ease-in-out infinite, gradientShift 3s ease-in-out infinite;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  position: relative;
-  overflow: hidden;
-}
-
-.start-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
+    0 8px 32px 0 rgba(255, 105, 180, 0.2),
+    inset 0 0 60px rgba(255, 255, 255, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.8);
   width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  transition: left 0.6s;
+  max-width: 800px;
+  /* Reduced from 900px for tighter feel */
+  animation: fadeIn 0.8s ease-out;
 }
 
-.start-button:hover::before {
-  left: 100%;
-}
-
-@keyframes buttonPulse {
-
-  0%,
-  100% {
-    transform: scale(1);
-    box-shadow: 0 8px 25px rgba(255, 107, 157, 0.4);
-  }
-
-  50% {
-    transform: scale(1.03);
-    box-shadow: 0 12px 35px rgba(255, 107, 157, 0.5);
-  }
-}
-
-.start-button:hover {
-  transform: translateY(-5px) scale(1.08);
-  box-shadow:
-    0 15px 40px rgba(255, 107, 157, 0.5),
-    0 8px 20px rgba(255, 107, 157, 0.3);
-  animation: none;
-}
-
-.start-button:active {
-  transform: translateY(-2px) scale(1.02);
-}
-
-.button-emoji {
-  font-size: 1.4rem;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
-}
-
-.info-text {
-  margin-top: 18px;
-  animation: fadeIn 1.5s ease-out;
-}
-
-.info-text p {
-  color: #9B8B9B;
-  font-size: 0.95rem;
-  font-weight: 500;
-  background: linear-gradient(135deg, #FFF5F7 0%, #FFE5EC 100%);
-  display: inline-block;
-  padding: 10px 20px;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 182, 193, 0.3);
-}
-
-/* 특징 카드 */
-.feature-cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
-  margin-top: 30px;
-}
-
-.feature-card {
-  background: linear-gradient(135deg, #FFFFFF 0%, #FFF8FA 100%);
-  padding: 22px 15px;
-  border-radius: 25px;
-  box-shadow:
-    0 8px 25px rgba(255, 182, 193, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  animation: cardFadeIn 0.8s ease-out backwards;
-  border: 2px solid rgba(255, 200, 216, 0.3);
-  position: relative;
-  overflow: hidden;
-}
-
-.feature-card::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255, 182, 193, 0.1) 0%, transparent 70%);
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.feature-card:hover::before {
-  opacity: 1;
-}
-
-.feature-card:nth-child(1) {
-  animation-delay: 0.2s;
-}
-
-.feature-card:nth-child(2) {
-  animation-delay: 0.35s;
-}
-
-.feature-card:nth-child(3) {
-  animation-delay: 0.5s;
-}
-
-@keyframes cardFadeIn {
+@keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px) scale(0.95);
+    transform: translateY(30px);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
-.feature-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow:
-    0 15px 35px rgba(255, 182, 193, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  border-color: rgba(255, 107, 157, 0.4);
+/* Header Section */
+.header {
+  text-align: center;
+  margin-bottom: 2.5rem;
 }
 
-.card-emoji {
-  font-size: 2.5rem;
-  margin-bottom: 12px;
-  animation: emojiFloat 3s ease-in-out infinite;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+.logo {
+  font-size: 4rem;
+  margin-bottom: 0.5rem;
+  animation: float 3s ease-in-out infinite;
+  filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.1));
 }
 
-.feature-card:nth-child(1) .card-emoji {
-  animation-delay: 0s;
-}
-
-.feature-card:nth-child(2) .card-emoji {
-  animation-delay: 0.5s;
-}
-
-.feature-card:nth-child(3) .card-emoji {
-  animation-delay: 1s;
-}
-
-@keyframes emojiFloat {
+@keyframes float {
 
   0%,
   100% {
@@ -369,248 +108,198 @@
   }
 
   50% {
-    transform: translateY(-5px) rotate(5deg);
+    transform: translateY(-15px) rotate(5deg);
   }
 }
 
-.feature-card h3 {
+.header h1 {
+  color: white;
+  font-size: 2.2rem;
+  margin-bottom: 0.5rem;
+  font-weight: 800;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #fff 0%, #fff0f5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  color: rgba(255, 255, 255, 0.95);
   font-size: 1.1rem;
-  color: #FF6B9D;
-  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+/* Action Grid */
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: auto auto;
+  gap: 1.5rem;
+}
+
+/* Action Card Base Styles */
+.action-card {
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  padding: 1.8rem;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.action-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(255, 105, 180, 0.2);
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+
+.action-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.8rem;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+.action-text h3 {
+  font-size: 1.2rem;
   font-weight: 700;
+  color: #4A4A4A;
+  /* Slightly darker for readability on pastel */
+  margin-bottom: 0.3rem;
 }
 
-.feature-card p {
-  color: #8B7B8B;
-  font-size: 0.85rem;
-  line-height: 1.5;
-  font-weight: 500;
+.action-text p {
+  font-size: 0.9rem;
+  color: #666;
+  line-height: 1.4;
 }
 
-/* 반응형 디자인 */
-@media (max-width: 768px) {
-  .home-container {
-    padding: 20px 15px;
-    align-items: flex-start;
+/* Main Action Card (Start Test) - Spans Full Width */
+.main-action {
+  grid-column: 1 / -1;
+  /* Spans both columns */
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 230, 240, 0.5) 100%);
+  border: 3px solid #fff;
+}
+
+.main-action .action-icon {
+  font-size: 3.5rem;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
   }
 
-  .hero-section {
-    padding: 30px 20px 35px;
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.main-action .action-text h3 {
+  font-size: 1.6rem;
+  color: #FF6B9D;
+}
+
+.main-action:hover {
+  box-shadow: 0 20px 50px rgba(255, 107, 157, 0.3);
+}
+
+/* Sub Action Cards (Features) */
+.sub-action {
+  padding: 1.5rem 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .home-container {
+    padding: 15px;
+  }
+
+  .glass-wrapper {
+    padding: 2rem 1.5rem;
     border-radius: 30px;
   }
 
-  .hero-section::before {
+  .header {
+    margin-bottom: 2rem;
+  }
+
+  .logo {
+    font-size: 3.5rem;
+  }
+
+  .header h1 {
     font-size: 1.8rem;
-    top: -15px;
   }
 
-  .title-text {
-    font-size: 2.2rem;
+  /* Stack sub-actions vertically or keep grid? 
+       Grid 2 columns works well for "At a glance", but if too narrow, stack. */
+  .action-grid {
+    gap: 1rem;
+    grid-template-columns: 1fr;
+    /* Stack everything on very small screens */
   }
 
-  .title-emoji {
-    font-size: 1.8rem;
+  /* But for "At a glance" with 3 sub-items, maybe keep them as grid? 
+       We have 3 sub items. 1 main + 3 sub.
+       Let's try: Main (full), Sub1 (full), Sub2 (half), Sub3 (half)?
+       OR just stack all for maximum readability on mobile.
+       Let's stack all for clear "One by One" readability but compacted.
+    */
+
+  .action-card {
+    flex-direction: row;
+    /* Horizontal layout for cards on mobile */
+    text-align: left;
+    padding: 1.2rem;
+    justify-content: flex-start;
+    align-items: center;
   }
 
-  .subtitle {
-    font-size: 1rem;
-    margin-bottom: 20px;
-  }
-
-  .feature-cards {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-top: 25px;
-  }
-
-  .feature-card {
-    padding: 18px 10px;
-    border-radius: 20px;
-  }
-
-  .card-emoji {
+  .action-icon {
+    margin-bottom: 0;
+    margin-right: 1.2rem;
     font-size: 2rem;
-    margin-bottom: 8px;
   }
 
-  .feature-card h3 {
-    font-size: 0.9rem;
-  }
-
-  .feature-card p {
-    font-size: 0.75rem;
-  }
-
-  .start-button {
-    padding: 16px 35px;
-    font-size: 1.1rem;
-  }
-
-  .float-emoji {
-    font-size: 1.8rem;
-    opacity: 0.3;
-  }
-}
-
-@media (max-width: 480px) {
-  .home-container {
-    padding: 15px 12px;
-  }
-
-  .hero-section {
-    padding: 25px 15px 30px;
-    border-radius: 25px;
-  }
-
-  .hero-section::before {
-    font-size: 1.5rem;
-    top: -12px;
-  }
-
-  .main-title {
-    gap: 8px;
-  }
-
-  .title-text {
-    font-size: 1.8rem;
-  }
-
-  .title-emoji {
-    font-size: 1.4rem;
-  }
-
-  .subtitle {
-    font-size: 0.9rem;
-    margin-bottom: 18px;
-  }
-
-  .start-button {
-    padding: 14px 28px;
-    font-size: 1rem;
-    border-radius: 40px;
-  }
-
-  .button-emoji {
-    font-size: 1.2rem;
-  }
-
-  .info-text p {
-    font-size: 0.85rem;
-    padding: 8px 15px;
-  }
-
-  .feature-cards {
-    gap: 8px;
-    margin-top: 20px;
-  }
-
-  .feature-card {
-    padding: 15px 8px;
-    border-radius: 18px;
-  }
-
-  .card-emoji {
-    font-size: 1.8rem;
-    margin-bottom: 6px;
-  }
-
-  .feature-card h3 {
-    font-size: 0.8rem;
-    margin-bottom: 5px;
-  }
-
-  .feature-card p {
-    font-size: 0.7rem;
-    line-height: 1.4;
-  }
-
-  .float-emoji {
-    font-size: 1.5rem;
-    opacity: 0.25;
-  }
-}
-
-/* =========================================
-   Mobile Optimization (max-width: 768px)
-   - Sticky Start Button
-   - Compact 2-Column Grid
-   - Slim Header
-   ========================================= */
-@media (max-width: 768px) {
-
-  /* 1. Header Diet & Bottom Padding for Sticky Button */
-  .hero-section {
-    padding: 20px 15px 90px;
-    /* Bottom padding ensures content isn't hidden behind sticky button */
-  }
-
-  .title-text {
-    font-size: 1.6rem;
-  }
-
-  .subtitle {
-    margin-bottom: 20px;
-    font-size: 0.95rem;
-  }
-
-  /* 2. Compact Grid (3 Cards) */
-  .feature-cards {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    margin-top: 20px;
-  }
-
-  /* Make the 3rd card span full width */
-  .feature-card:nth-child(3) {
-    grid-column: span 2;
-  }
-
-  .feature-card {
-    padding: 15px;
+  .action-text {
     display: flex;
     flex-direction: column;
+  }
+
+  .main-action {
+    flex-direction: column;
+    /* Main action stays vertical for emphasis */
+    text-align: center;
+    padding: 2rem 1.5rem;
+  }
+
+  .main-action .action-icon {
+    margin-right: 0;
+    margin-bottom: 1rem;
+    font-size: 3rem;
+  }
+
+  .main-action .action-text {
     align-items: center;
-    justify-content: center;
   }
 
-  .card-emoji {
-    font-size: 1.8rem;
-    margin-bottom: 5px;
-  }
-
-  .feature-card h3 {
-    font-size: 0.95rem;
-    margin-bottom: 2px;
-  }
-
-  .feature-card p {
-    font-size: 0.8rem;
-    line-height: 1.3;
-    margin-bottom: 0;
-  }
-
-  /* 3. Sticky Start Button */
-  .start-button {
-    position: fixed;
-    bottom: 25px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    max-width: 400px;
-    z-index: 1000;
-    margin: 0;
-    padding: 16px 20px;
-    justify-content: center;
-    box-shadow: 0 10px 30px rgba(255, 107, 157, 0.4);
-    animation: buttonPulse 2s ease-in-out infinite;
-  }
-
-  /* Disable hover transform on mobile to prevent stuck state */
-  .start-button:hover {
-    transform: translateX(-50%);
-  }
-
-  .start-button:active {
-    transform: translateX(-50%) scale(0.98);
+  /* Make the sub-action cards grid if screen is slightly larger, but column on tiny screens */
+  .action-grid {
+    grid-template-columns: 1fr;
   }
 }

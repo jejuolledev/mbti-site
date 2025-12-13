@@ -8,48 +8,43 @@ interface HomeProps {
 const Home: React.FC<HomeProps> = ({ onStart }) => {
   return (
     <div className="home-container">
-      <div className="home-content">
-        <div className="emoji-decoration">
-          <span className="float-emoji">🌟</span>
-          <span className="float-emoji">💖</span>
-          <span className="float-emoji">✨</span>
-          <span className="float-emoji">🎨</span>
-          <span className="float-emoji">🦄</span>
-        </div>
-        
-        <div className="hero-section">
-          <h1 className="main-title">
-            <span className="title-emoji">🎨</span>
-            <span className="title-text">귀여운 MBTI</span>
-            <span className="title-emoji">✨</span>
-          </h1>
+      <div className="glass-wrapper">
+        <div className="header">
+          <div className="logo">🎨</div>
+          <h1>귀여운 MBTI</h1>
           <p className="subtitle">나의 성격 유형을 재미있게 알아보세요!</p>
+        </div>
 
-          <button className="start-button" onClick={onStart}>
-            <span className="button-emoji">🌈</span>
-            <span className="button-text">테스트 시작하기</span>
-            <span className="button-emoji">✨</span>
-          </button>
-
-          <div className="info-text">
-            <p>💡 솔직하게 답변할수록 정확해요!</p>
+        <div className="action-grid">
+          <div className="action-card main-action" onClick={onStart}>
+            <div className="action-icon">✨</div>
+            <div className="action-text">
+              <h3>MBTI 테스트 시작</h3>
+              <p>빠르고 정확한 성격 분석</p>
+            </div>
           </div>
 
-          <div className="feature-cards">
-            <div className="feature-card">
-              <div className="card-emoji">⚡</div>
-              <h3>빠른 테스트</h3>
-              <p>12개 질문으로<br/>3분 완성!</p>
+          <div className="action-card sub-action">
+            <div className="action-icon">⚡</div>
+            <div className="action-text">
+              <h3>빠른 결과</h3>
+              <p>3분 완성</p>
             </div>
-            <div className="feature-card">
-              <div className="card-emoji">🎯</div>
+          </div>
+
+          <div className="action-card sub-action">
+            <div className="action-icon">🎯</div>
+            <div className="action-text">
               <h3>정확한 분석</h3>
-              <p>16가지 유형의<br/>상세한 설명</p>
+              <p>16가지 유형</p>
             </div>
-            <div className="feature-card">
-              <div className="card-emoji">💕</div>
-              <h3>궁합 체크</h3>
-              <p>나와 잘 맞는<br/>유형 찾기</p>
+          </div>
+
+          <div className="action-card sub-action">
+            <div className="action-icon">💕</div>
+            <div className="action-text">
+              <h3>궁합 보기</h3>
+              <p>나와 맞는 유형</p>
             </div>
           </div>
         </div>
