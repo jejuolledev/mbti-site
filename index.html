@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="google-adsense-account" content="ca-pub-1642749702806306">
     <title>🎨 귀여운 MBTI 테스트</title>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1642749702806306"
-     crossorigin="anonymous"></script>
+        crossorigin="anonymous"></script>
     <style>
         * {
             margin: 0;
@@ -24,15 +25,48 @@
             --neutral: #9CA3AF;
         }
 
+        /* Updated Home Screen Styles - Glassmorphism & At-a-Glance */
         body {
-            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #FFF5F7 0%, #FFE5EC 100%);
+            font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%);
             color: var(--text-dark);
             line-height: 1.6;
             min-height: 100vh;
             overflow-x: hidden;
             -webkit-text-size-adjust: 100%;
-            -webkit-touch-callout: none;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(2px 2px at 20% 30%, white, transparent),
+                radial-gradient(2px 2px at 60% 70%, white, transparent),
+                radial-gradient(1px 1px at 50% 50%, white, transparent),
+                radial-gradient(2.5px 2.5px at 80% 10%, white, transparent),
+                radial-gradient(1px 1px at 33% 80%, white, transparent);
+            background-size: 200% 200%;
+            animation: twinkle 10s ease-in-out infinite;
+            opacity: 0.6;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes twinkle {
+
+            0%,
+            100% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
         }
 
         .container {
@@ -40,36 +74,222 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 40px 20px;
+            padding: 20px;
         }
 
+        /* Glassmorphism Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            padding: 3rem 2rem;
+            border-radius: 40px;
+            box-shadow: 0 8px 32px 0 rgba(255, 105, 180, 0.2), inset 0 0 60px rgba(255, 255, 255, 0.3);
+            width: 100%;
+            max-width: 800px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        /* Compatibility for existing classes overrides */
         .card {
+            /* Inherit mostly from glass-card for home, but kept for legacy pages if needed */
             max-width: 800px;
             width: 100%;
-            background: white;
-            padding: 60px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
             border-radius: 30px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
             animation: fadeIn 0.8s ease-out;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .home-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .logo-emoji {
+            font-size: 4rem;
+            margin-bottom: 0.5rem;
+            display: block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .home-title {
+            color: white;
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, #fff 0%, #fff0f5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .home-subtitle {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+
+        /* Action Grid Layout */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .action-card {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            padding: 1.8rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.4s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .action-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            background: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 15px 30px rgba(255, 105, 180, 0.2);
+        }
+
+        .action-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .action-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #4A4A4A;
+            margin-bottom: 0.3rem;
+        }
+
+        .action-card p {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* Main Start Card */
+        .main-action {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 230, 240, 0.5) 100%);
+            border: 3px solid #fff;
+            padding: 2.5rem 1.5rem;
+        }
+
+        .main-action .action-icon {
+            font-size: 3.5rem;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        .main-action h3 {
+            font-size: 1.6rem;
+            color: #FF6B9D;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .glass-card {
+                padding: 2rem 1.5rem;
+                border-radius: 30px;
+            }
+
+            .home-title {
+                font-size: 1.8rem;
+            }
+
+            /* Mobile Stack Layout */
+            .action-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .action-card {
+                flex-direction: row;
+                text-align: left;
+                padding: 1.2rem;
+                justify-content: flex-start;
+            }
+
+            .action-icon {
+                margin-bottom: 0;
+                margin-right: 1.2rem;
+                font-size: 2rem;
+            }
+
+            .action-text {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .main-action {
+                flex-direction: column;
+                text-align: center;
+                padding: 2rem 1.5rem;
+                justify-content: center;
+            }
+
+            .main-action .action-icon {
+                margin-right: 0;
+                margin-bottom: 1rem;
+                font-size: 3rem;
+            }
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
         }
 
         @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
         }
 
         /* Home Page */
-        .home-title {
+        /* .home-title {
             font-size: 3.5rem;
             font-weight: 700;
             text-align: center;
@@ -78,14 +298,14 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: bounce 2s ease-in-out infinite;
-        }
+        } */
 
-        .home-subtitle {
+        /* .home-subtitle {
             font-size: 1.3rem;
             color: var(--text-light);
             text-align: center;
             margin-bottom: 50px;
-        }
+        } */
 
         .feature-cards {
             display: grid;
@@ -102,7 +322,9 @@
             transition: transform 0.3s;
         }
 
-        .feature-card:hover { transform: translateY(-10px); }
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
 
         .feature-emoji {
             font-size: 3rem;
@@ -194,7 +416,8 @@
             gap: 15px;
             font-size: 1.05rem;
             cursor: pointer;
-            transition: transform 0.2s; /* transform만 애니메이션 */
+            transition: transform 0.2s;
+            /* transform만 애니메이션 */
             text-align: left;
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
@@ -221,7 +444,8 @@
             border-color: var(--primary) !important;
             background: var(--background) !important;
             transform: scale(0.98) !important;
-            transition: none !important; /* transition 완전 제거 */
+            transition: none !important;
+            /* transition 완전 제거 */
         }
 
         .option-emoji {
@@ -463,8 +687,15 @@
         }
 
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(50px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .ad-title {
@@ -580,58 +811,71 @@
             .card {
                 padding: 40px 20px;
             }
-            .home-title {
+
+            /* .home-title {
                 font-size: 2.5rem;
-            }
+            } */
             .question-text {
                 font-size: 1.5rem;
             }
+
             .result-type {
                 font-size: 2rem;
             }
+
             .action-buttons {
                 flex-direction: column;
             }
+
             .score-bar-container {
                 gap: 5px;
             }
+
             .score-label {
                 min-width: 60px;
                 font-size: 0.85rem;
             }
+
             .score-bar-fill {
                 font-size: 0.9rem;
                 padding-right: 10px;
             }
+
             .score-header {
                 font-size: 0.9rem;
             }
+
             .ad-content {
                 padding: 40px 30px;
             }
+
             .ad-title {
                 font-size: 1.5rem;
             }
+
             .ad-countdown {
                 font-size: 3rem;
             }
+
             .option-btn {
                 padding: 18px 20px;
                 font-size: 0.95rem;
             }
+
             .option-emoji {
                 font-size: 1.8rem;
             }
         }
     </style>
 </head>
+
 <body>
     <div id="app"></div>
 
     <script>
         // 🎨 MBTI 테스트 v2.0 - 3점 척도 + 25문항 시스템
         // 정밀도 향상: 아니다(-1), 보통(0), 그렇다(+1)
-        
+
         const questions = [
             // E/I 축 (7문항) - 외향성/내향성
             {
@@ -1035,11 +1279,11 @@
         // MBTI 계산 (3점 척도)
         function calculateMBTI(userAnswers) {
             scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
-            
+
             userAnswers.forEach((answer, index) => {
                 const question = questions[index];
                 const value = answer; // -1, 0, 또는 1
-                
+
                 if (question.axis === 'EI') {
                     if (value > 0) scores.E += value;
                     else if (value < 0) scores.I += Math.abs(value);
@@ -1054,14 +1298,14 @@
                     else if (value < 0) scores.P += Math.abs(value);
                 }
             });
-            
+
             const mbtiType = (
                 (scores.E >= scores.I ? 'E' : 'I') +
                 (scores.N >= scores.S ? 'N' : 'S') +
                 (scores.T >= scores.F ? 'T' : 'F') +
                 (scores.J >= scores.P ? 'J' : 'P')
             );
-            
+
             return mbtiType;
         }
 
@@ -1094,35 +1338,56 @@
         // 렌더 함수들
         function renderHome() {
             return `
-                <div class="card">
-                    <h1 class="home-title">🎨 귀여운 MBTI 테스트 ✨</h1>
-                    <p class="home-subtitle">나의 성격 유형을 더 정확하게 알아보세요!</p>
-
-                    <div style="text-align: center; margin-bottom: 30px;">
-                        <button class="btn" onclick="location.href='https://moahub.co.kr'" style="background: linear-gradient(135deg, #b8b8b8 0%, #8a8a8a 100%); padding: 12px 30px; font-size: 1rem;">🏠 홈으로</button>
+                <div class="glass-card">
+                    <div class="home-header">
+                        <span class="logo-emoji">🎨</span>
+                        <h1 class="home-title">귀여운 MBTI</h1>
+                        <p class="home-subtitle">나의 성격 유형을 더 정확하게 알아보세요!</p>
                     </div>
 
-                    <div class="feature-cards">
-                        <div class="feature-card">
-                            <div class="feature-emoji">⚡</div>
-                            <h3>빠른 테스트</h3>
-                            <p>25개 질문으로<br/>5분 완성!</p>
+                    <div class="action-grid">
+                        <!-- Main Start Button -->
+                        <div class="action-card main-action" onclick="startTest()">
+                            <div class="action-icon">✨</div>
+                            <div class="action-text">
+                                <h3>MBTI 테스트 시작</h3>
+                                <p>정확도 높은 3점 척도 분석</p>
+                            </div>
                         </div>
-                        <div class="feature-card">
-                            <div class="feature-emoji">🎯</div>
-                            <h3>정밀한 분석</h3>
-                            <p>3단계 선택으로<br/>정확도 향상!</p>
+
+                        <!-- Feature Cards -->
+                        <div class="action-card sub-action">
+                             <div class="action-icon">⚡</div>
+                             <div class="action-text">
+                               <h3>빠른 결과</h3>
+                               <p>25문항으로 5분 완성</p>
+                             </div>
                         </div>
-                        <div class="feature-card">
-                            <div class="feature-emoji">💕</div>
-                            <h3>궁합 체크</h3>
-                            <p>나와 잘 맞는<br/>유형 찾기</p>
+
+                        <div class="action-card sub-action">
+                             <div class="action-icon">🎯</div>
+                             <div class="action-text">
+                               <h3>정밀 분석</h3>
+                               <p>3단계 답변 시스템</p>
+                             </div>
+                        </div>
+
+                         <div class="action-card sub-action">
+                             <div class="action-icon">💕</div>
+                             <div class="action-text">
+                               <h3>궁합 보기</h3>
+                               <p>나와 맞는 유형 찾기</p>
+                             </div>
+                        </div>
+
+                        <div class="action-card sub-action" onclick="location.href='https://moahub.co.kr'">
+                             <div class="action-icon">🏠</div>
+                             <div class="action-text">
+                               <h3>홈으로</h3>
+                               <p>다른 테스트 보러가기</p>
+                             </div>
                         </div>
                     </div>
-
-                    <button class="btn" onclick="startTest()">
-                        테스트 시작하기 🚀
-                    </button>
                 </div>
             `;
         }
@@ -1130,7 +1395,7 @@
         function renderTest() {
             const question = questions[currentQuestion];
             const progress = ((currentQuestion + 1) / questions.length) * 100;
-            
+
             return `
                 <div class="card" data-question="${currentQuestion}">
                     <div class="progress-bar">
@@ -1156,7 +1421,7 @@
         function renderResult() {
             const mbtiType = calculateMBTI(answers);
             const result = mbtiResults[mbtiType];
-            
+
             if (!isPremium) {
                 return renderBasicResult(mbtiType, result);
             } else {
@@ -1233,18 +1498,18 @@
 
         function renderPremiumResult(mbtiType, result) {
             const percentages = getPercentages();
-            
+
             const eiTypes = mbtiType[0] === 'E' ? ['E', 'I'] : ['I', 'E'];
             const snTypes = mbtiType[1] === 'S' ? ['S', 'N'] : ['N', 'S'];
             const tfTypes = mbtiType[2] === 'T' ? ['T', 'F'] : ['F', 'T'];
             const jpTypes = mbtiType[3] === 'J' ? ['J', 'P'] : ['P', 'J'];
-            
+
             const borderlines = [];
             if (isBorderline(percentages[eiTypes[0]], percentages[eiTypes[1]])) borderlines.push('E/I');
             if (isBorderline(percentages[snTypes[0]], percentages[snTypes[1]])) borderlines.push('S/N');
             if (isBorderline(percentages[tfTypes[0]], percentages[tfTypes[1]])) borderlines.push('T/F');
             if (isBorderline(percentages[jpTypes[0]], percentages[jpTypes[1]])) borderlines.push('J/P');
-            
+
             return `
                 <div class="card">
                     <span class="premium-badge">✨ 프리미엄 결과</span>
@@ -1351,15 +1616,15 @@
                     <div style="margin-bottom: 40px;">
                         <h3 class="section-title">💕 잘 맞는 유형</h3>
                         ${result.compatibility.map(type => {
-                            const compatResult = mbtiResults[type];
-                            return `
+                const compatResult = mbtiResults[type];
+                return `
                                 <div class="compatibility-item">
                                     <span class="compat-emoji">${compatResult.emoji}</span>
                                     <span class="compat-type">${type}</span>
                                     <span class="compat-title">${compatResult.title}</span>
                                 </div>
                             `;
-                        }).join('')}
+            }).join('')}
                     </div>
 
                     <div class="action-buttons">
@@ -1376,7 +1641,7 @@
 
         function render() {
             const app = document.getElementById('app');
-            
+
             // Safari 캐싱 완전 초기화 - 1차
             const oldButtons = document.querySelectorAll('.option-btn');
             oldButtons.forEach(btn => {
@@ -1385,19 +1650,18 @@
                 btn.style.cssText = '';
                 btn.blur();
             });
-            
+
             // DOM 완전 초기화
             app.innerHTML = '';
             void app.offsetWidth; // 리플로우 강제
-            
+
             // 새 DOM 삽입
-            app.innerHTML = `<div class="container">${
-                currentPage === 'home' ? renderHome() :
-                currentPage === 'test' ? renderTest() :
-                currentPage === 'ad' ? renderAdModal() :
-                renderResult()
-            }</div>`;
-            
+            app.innerHTML = `<div class="container">${currentPage === 'home' ? renderHome() :
+                    currentPage === 'test' ? renderTest() :
+                        currentPage === 'ad' ? renderAdModal() :
+                            renderResult()
+                }</div>`;
+
             // 렌더링 후 모든 버튼 강제 초기화 - 2차 (Safari 전용)
             if (currentPage === 'test') {
                 // 즉시 초기화
@@ -1406,11 +1670,11 @@
                     newButtons.forEach(btn => {
                         // 클래스 제거
                         btn.classList.remove('selected');
-                        
+
                         // 모든 스타일 제거
                         btn.removeAttribute('style');
                         btn.style.cssText = '';
-                        
+
                         // 초기 상태 명시적 설정
                         btn.style.background = 'white';
                         btn.style.border = '3px solid #F0F0F0';
@@ -1418,7 +1682,7 @@
                         btn.style.pointerEvents = 'auto';
                     });
                 });
-                
+
                 // 추가 딜레이 후 다시 한번 확인
                 setTimeout(() => {
                     const buttons = document.querySelectorAll('.option-btn');
@@ -1434,7 +1698,7 @@
 
         function renderAdModal() {
             const progress = ((15 - adCountdown) / 15) * 100;
-            
+
             return `
                 <div class="ad-modal">
                     <div class="ad-content">
@@ -1472,10 +1736,10 @@
         function startAdCountdown() {
             const interval = setInterval(() => {
                 adCountdown--;
-                
+
                 const countdownEl = document.querySelector('.ad-countdown');
                 const progressEl = document.querySelector('.ad-progress-fill');
-                
+
                 if (adCountdown > 0) {
                     if (countdownEl) countdownEl.textContent = adCountdown;
                     if (progressEl) {
@@ -1507,7 +1771,7 @@
         function selectAnswer(value, event) {
             if (isProcessing) return;
             isProcessing = true;
-            
+
             // 선택 피드백
             if (event && event.currentTarget) {
                 const btn = event.currentTarget;
@@ -1515,20 +1779,20 @@
                 btn.blur();
                 btn.style.pointerEvents = 'none';
             }
-            
+
             answers.push(value);
-            
+
             setTimeout(() => {
                 // 모든 버튼 상태 강제 초기화
                 const allButtons = document.querySelectorAll('.option-btn');
                 allButtons.forEach(b => {
                     // 클래스 제거
                     b.classList.remove('selected');
-                    
+
                     // 스타일 완전 제거
                     b.removeAttribute('style');
                     b.style.cssText = '';
-                    
+
                     // 초기 상태 명시적 설정
                     b.style.background = 'white';
                     b.style.border = '3px solid #F0F0F0';
@@ -1536,7 +1800,7 @@
                     b.style.pointerEvents = 'auto';
                     b.blur();
                 });
-                
+
                 if (currentQuestion < questions.length - 1) {
                     currentQuestion++;
                     render();
@@ -1571,12 +1835,12 @@ T/F: ${percentages[mbtiType[2]]}%
 J/P: ${percentages[mbtiType[3]]}%
 
 귀여운 MBTI 테스트 (3점 척도 정밀 버전)`;
-            
+
             if (navigator.share) {
                 navigator.share({
                     title: '귀여운 MBTI 테스트',
                     text: shareText
-                }).catch(() => {});
+                }).catch(() => { });
             } else {
                 navigator.clipboard.writeText(shareText);
                 alert('결과가 클립보드에 복사되었습니다! 🎉');
@@ -1584,13 +1848,13 @@ J/P: ${percentages[mbtiType[3]]}%
         }
 
         // Safari bfcache 방지
-        window.addEventListener('pageshow', function(event) {
+        window.addEventListener('pageshow', function (event) {
             if (event.persisted) {
                 restart();
             }
         });
-        
-        window.addEventListener('load', function() {
+
+        window.addEventListener('load', function () {
             document.querySelectorAll('.option-btn').forEach(btn => {
                 btn.classList.remove('selected');
                 btn.removeAttribute('style');
@@ -1605,4 +1869,5 @@ J/P: ${percentages[mbtiType[3]]}%
         render();
     </script>
 </body>
+
 </html>
