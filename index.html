@@ -336,29 +336,37 @@
                 margin-bottom: 1rem;
             }
 
-            /* Sub actions in a row? */
+            /* Sub actions in a grid (2x2) */
             .action-grid {
-                grid-template-columns: repeat(3, 1fr);
-                /* 3 columns for features */
-                gap: 5px;
+                grid-template-columns: repeat(2, 1fr);
+                /* 2 columns for features (2x2 layout) */
+                gap: 10px;
             }
 
             .sub-action {
-                padding: 0.5rem !important;
+                padding: 1rem !important;
+                /* Restore padding for legibility */
             }
 
             .sub-action h3 {
-                font-size: 0.8rem;
-                margin-bottom: 0;
+                font-size: 0.85rem;
+                margin-bottom: 2px;
             }
 
             .sub-action p {
-                display: none;
-                /* Hide description on mobile for compactness */
+                display: block;
+                /* Show description again? or keep hidden? User liked "At a glance". */
+                /* Let's show description but small, or hide if too cluttered. 
+                    User said "Quick Result, Precision, Compatibility, +1". 
+                    If 2x2, we have room for small text. */
+                font-size: 0.7rem;
+                line-height: 1.2;
+                opacity: 0.8;
+                display: block;
             }
 
             .sub-action .action-icon {
-                font-size: 1.8rem;
+                font-size: 2rem;
                 margin-bottom: 5px;
             }
         }
@@ -1496,7 +1504,15 @@
                              <div class="action-icon">💕</div>
                              <div class="action-text">
                                <h3>궁합 보기</h3>
-                               <p>나와 맞는 유형 찾기</p>
+                               <p>나와 맞는 유형</p>
+                             </div>
+                        </div>
+
+                        <div class="action-card sub-action">
+                             <div class="action-icon">📖</div>
+                             <div class="action-text">
+                               <h3>유형 도감</h3>
+                               <p>16가지 성격</p>
                              </div>
                         </div>
                     </div>
