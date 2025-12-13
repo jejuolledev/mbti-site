@@ -101,6 +101,7 @@
             border-radius: 30px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
             animation: fadeIn 0.8s ease-out;
+            position: relative;
         }
 
         .home-header {
@@ -1526,21 +1527,30 @@
 
             return `
                 <div class="card" data-question="${currentQuestion}">
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${progress}%"></div>
+                    <!-- Top Left Home Button -->
+                    <div class="home-btn-wrapper">
+                        <button class="cute-home-btn" onclick="location.href='index.html'; restart()">
+                            <span>🏠</span> 홈으로
+                        </button>
                     </div>
-                    <div class="progress-text">${currentQuestion + 1} / ${questions.length}</div>
-                    
-                    <div class="question-number">Q${currentQuestion + 1}</div>
-                    <h2 class="question-text">${question.question}</h2>
-                    
-                    <div class="options-container">
-                        ${question.options.map((option, index) => `
-                            <button class="option-btn" data-index="${index}" onclick="selectAnswer(${option.value}, event)">
-                                <span class="option-emoji">${option.emoji}</span>
-                                <span>${option.text}</span>
-                            </button>
-                        `).join('')}
+
+                    <div style="margin-top: 50px;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progress}%"></div>
+                        </div>
+                        <div class="progress-text">${currentQuestion + 1} / ${questions.length}</div>
+                        
+                        <div class="question-number">Q${currentQuestion + 1}</div>
+                        <h2 class="question-text">${question.question}</h2>
+                        
+                        <div class="options-container">
+                            ${question.options.map((option, index) => `
+                                <button class="option-btn" data-index="${index}" onclick="selectAnswer(${option.value}, event)">
+                                    <span class="option-emoji">${option.emoji}</span>
+                                    <span>${option.text}</span>
+                                </button>
+                            `).join('')}
+                        </div>
                     </div>
                 </div>
             `;
