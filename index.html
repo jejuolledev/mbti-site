@@ -186,6 +186,7 @@
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 230, 240, 0.5) 100%);
             border: 3px solid #fff;
             padding: 2.5rem 1.5rem;
+            box-shadow: 0 10px 25px rgba(255, 107, 157, 0.2);
         }
 
         .main-action .action-icon {
@@ -198,6 +199,50 @@
             color: #FF6B9D;
         }
 
+        /* Transparent Feature Cards (Refined) */
+        .sub-action {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 1rem !important;
+        }
+
+        .sub-action:hover {
+            transform: translateY(-5px) scale(1.05);
+            background: rgba(255, 255, 255, 0.2) !important;
+        }
+
+        /* Cute Home Button (Top Left) */
+        .home-btn-wrapper {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+        }
+
+        .cute-home-btn {
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid #FF9A9E;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #FF6B9D;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 154, 158, 0.3);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .cute-home-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            background: white;
+            box-shadow: 0 8px 20px rgba(255, 154, 158, 0.5);
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
@@ -206,16 +251,29 @@
             .glass-card {
                 padding: 2rem 1.5rem;
                 border-radius: 30px;
+                padding: 3rem 1.5rem 2rem;
+                border-radius: 30px;
+                position: relative;
             }
 
             .home-title {
                 font-size: 1.8rem;
             }
 
+            .home-btn-wrapper {
+                top: 15px;
+                left: 15px;
+            }
+
+            .cute-home-btn {
+                padding: 8px 15px;
+                font-size: 0.85rem;
+            }
+
             /* Mobile Stack Layout */
             .action-grid {
                 grid-template-columns: 1fr;
-                gap: 1rem;
+                gap: 0.5rem;
             }
 
             .action-card {
@@ -247,6 +305,61 @@
                 margin-right: 0;
                 margin-bottom: 1rem;
                 font-size: 3rem;
+            }
+
+            /* Adjust sub-action text alignment for mobile */
+            .sub-action {
+                justify-content: center;
+                /* Center content */
+                text-align: center;
+                /* Center text */
+                flex-direction: column;
+                /* Stack icon and text */
+            }
+
+            .sub-action .action-icon {
+                margin-right: 0;
+                margin-bottom: 0.5rem;
+            }
+
+            .sub-action .action-text {
+                align-items: center;
+            }
+        }
+
+        /* Mobile Feature Grid Refinement */
+        @media (max-width: 768px) {
+
+            /* Main Action full width */
+            .main-action {
+                grid-column: 1 / -1;
+                margin-bottom: 1rem;
+            }
+
+            /* Sub actions in a row? */
+            .action-grid {
+                grid-template-columns: repeat(3, 1fr);
+                /* 3 columns for features */
+                gap: 5px;
+            }
+
+            .sub-action {
+                padding: 0.5rem !important;
+            }
+
+            .sub-action h3 {
+                font-size: 0.8rem;
+                margin-bottom: 0;
+            }
+
+            .sub-action p {
+                display: none;
+                /* Hide description on mobile for compactness */
+            }
+
+            .sub-action .action-icon {
+                font-size: 1.8rem;
+                margin-bottom: 5px;
             }
         }
 
@@ -1339,6 +1452,13 @@
         function renderHome() {
             return `
                 <div class="glass-card">
+                    <!-- Top Left Home Button -->
+                    <div class="home-btn-wrapper">
+                        <button class="cute-home-btn" onclick="location.href='https://moahub.co.kr'">
+                            <span>🏠</span> 홈으로
+                        </button>
+                    </div>
+
                     <div class="home-header">
                         <span class="logo-emoji">🎨</span>
                         <h1 class="home-title">귀여운 MBTI</h1>
@@ -1355,7 +1475,7 @@
                             </div>
                         </div>
 
-                        <!-- Feature Cards -->
+                        <!-- Feature Cards (Transparent) -->
                         <div class="action-card sub-action">
                              <div class="action-icon">⚡</div>
                              <div class="action-text">
@@ -1377,14 +1497,6 @@
                              <div class="action-text">
                                <h3>궁합 보기</h3>
                                <p>나와 맞는 유형 찾기</p>
-                             </div>
-                        </div>
-
-                        <div class="action-card sub-action" onclick="location.href='https://moahub.co.kr'">
-                             <div class="action-icon">🏠</div>
-                             <div class="action-text">
-                               <h3>홈으로</h3>
-                               <p>다른 테스트 보러가기</p>
                              </div>
                         </div>
                     </div>
@@ -1657,9 +1769,9 @@
 
             // 새 DOM 삽입
             app.innerHTML = `<div class="container">${currentPage === 'home' ? renderHome() :
-                    currentPage === 'test' ? renderTest() :
-                        currentPage === 'ad' ? renderAdModal() :
-                            renderResult()
+                currentPage === 'test' ? renderTest() :
+                    currentPage === 'ad' ? renderAdModal() :
+                        renderResult()
                 }</div>`;
 
             // 렌더링 후 모든 버튼 강제 초기화 - 2차 (Safari 전용)
