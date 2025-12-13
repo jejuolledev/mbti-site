@@ -70,15 +70,20 @@
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0) rotate(0deg) scale(1);
   }
+
   25% {
     transform: translateY(-15px) rotate(5deg) scale(1.05);
   }
+
   50% {
     transform: translateY(-25px) rotate(-3deg) scale(1.1);
   }
+
   75% {
     transform: translateY(-10px) rotate(3deg) scale(1.03);
   }
@@ -112,8 +117,15 @@
 }
 
 @keyframes swing {
-  0%, 100% { transform: translateX(-50%) rotate(-5deg); }
-  50% { transform: translateX(-50%) rotate(5deg); }
+
+  0%,
+  100% {
+    transform: translateX(-50%) rotate(-5deg);
+  }
+
+  50% {
+    transform: translateX(-50%) rotate(5deg);
+  }
 }
 
 .main-title {
@@ -126,8 +138,15 @@
 }
 
 @keyframes titleBounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
 .title-emoji {
@@ -149,8 +168,15 @@
 }
 
 @keyframes gradientShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 .subtitle {
@@ -200,8 +226,17 @@
 }
 
 @keyframes buttonPulse {
-  0%, 100% { transform: scale(1); box-shadow: 0 8px 25px rgba(255, 107, 157, 0.4); }
-  50% { transform: scale(1.03); box-shadow: 0 12px 35px rgba(255, 107, 157, 0.5); }
+
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 8px 25px rgba(255, 107, 157, 0.4);
+  }
+
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 12px 35px rgba(255, 107, 157, 0.5);
+  }
 }
 
 .start-button:hover {
@@ -275,15 +310,24 @@
   opacity: 1;
 }
 
-.feature-card:nth-child(1) { animation-delay: 0.2s; }
-.feature-card:nth-child(2) { animation-delay: 0.35s; }
-.feature-card:nth-child(3) { animation-delay: 0.5s; }
+.feature-card:nth-child(1) {
+  animation-delay: 0.2s;
+}
+
+.feature-card:nth-child(2) {
+  animation-delay: 0.35s;
+}
+
+.feature-card:nth-child(3) {
+  animation-delay: 0.5s;
+}
 
 @keyframes cardFadeIn {
   from {
     opacity: 0;
     transform: translateY(20px) scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -305,13 +349,28 @@
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
-.feature-card:nth-child(1) .card-emoji { animation-delay: 0s; }
-.feature-card:nth-child(2) .card-emoji { animation-delay: 0.5s; }
-.feature-card:nth-child(3) .card-emoji { animation-delay: 1s; }
+.feature-card:nth-child(1) .card-emoji {
+  animation-delay: 0s;
+}
+
+.feature-card:nth-child(2) .card-emoji {
+  animation-delay: 0.5s;
+}
+
+.feature-card:nth-child(3) .card-emoji {
+  animation-delay: 1s;
+}
 
 @keyframes emojiFloat {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-5px) rotate(5deg); }
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-5px) rotate(5deg);
+  }
 }
 
 .feature-card h3 {
@@ -468,5 +527,90 @@
   .float-emoji {
     font-size: 1.5rem;
     opacity: 0.25;
+  }
+}
+
+/* =========================================
+   Mobile Optimization (max-width: 768px)
+   - Sticky Start Button
+   - Compact 2-Column Grid
+   - Slim Header
+   ========================================= */
+@media (max-width: 768px) {
+
+  /* 1. Header Diet & Bottom Padding for Sticky Button */
+  .hero-section {
+    padding: 20px 15px 90px;
+    /* Bottom padding ensures content isn't hidden behind sticky button */
+  }
+
+  .title-text {
+    font-size: 1.6rem;
+  }
+
+  .subtitle {
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+  }
+
+  /* 2. Compact Grid (3 Cards) */
+  .feature-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-top: 20px;
+  }
+
+  /* Make the 3rd card span full width */
+  .feature-card:nth-child(3) {
+    grid-column: span 2;
+  }
+
+  .feature-card {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card-emoji {
+    font-size: 1.8rem;
+    margin-bottom: 5px;
+  }
+
+  .feature-card h3 {
+    font-size: 0.95rem;
+    margin-bottom: 2px;
+  }
+
+  .feature-card p {
+    font-size: 0.8rem;
+    line-height: 1.3;
+    margin-bottom: 0;
+  }
+
+  /* 3. Sticky Start Button */
+  .start-button {
+    position: fixed;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 400px;
+    z-index: 1000;
+    margin: 0;
+    padding: 16px 20px;
+    justify-content: center;
+    box-shadow: 0 10px 30px rgba(255, 107, 157, 0.4);
+    animation: buttonPulse 2s ease-in-out infinite;
+  }
+
+  /* Disable hover transform on mobile to prevent stuck state */
+  .start-button:hover {
+    transform: translateX(-50%);
+  }
+
+  .start-button:active {
+    transform: translateX(-50%) scale(0.98);
   }
 }
