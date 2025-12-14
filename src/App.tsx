@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Home from './pages/Home';
 import Test from './pages/Test';
 import Result from './pages/Result';
+import Footer from './components/Footer';
 import { Answer } from './types';
 import { calculateMBTI } from './utils/mbti';
 import './styles/global.css';
@@ -45,6 +46,7 @@ function App() {
       {currentPage === 'home' && <Home onStart={handleStart} />}
       {currentPage === 'test' && <Test onComplete={handleComplete} onGoHome={handleGoHome} />}
       {currentPage === 'result' && <Result mbtiType={mbtiType} onRestart={handleRestart} />}
+      <Footer />
     </div>
   );
 }
