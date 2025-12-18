@@ -124,31 +124,42 @@ const Result: React.FC<ResultProps> = ({ mbtiType, onRestart }) => {
 
     try {
       // 이미지 생성
+      console.log('1. 이미지 생성 시작');
       const imageResult = await generateShareImage();
       if (!imageResult) {
         throw new Error('이미지 생성 실패');
       }
+      console.log('2. 이미지 생성 성공, blob size:', imageResult.blob.size);
 
       const { blob } = imageResult;
       const file = new File([blob], `mbti-${result.type}-result.png`, { type: 'image/png' });
-      const shareText = `${result.emoji} 나의 MBTI는 "${result.type} - ${result.title}"!\n\n${selectedPromo}\n👉 moahub.co.kr`;
+
+      console.log('3. File 생성 완료:', file.name, file.size);
+      console.log('4. navigator.share 존재:', !!navigator.share);
+      console.log('5. navigator.canShare 존재:', !!navigator.canShare);
 
       // 1. Web Share API 파일 공유 시도 (모바일 사파리, 안드로이드 크롬)
       try {
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        const canShareFiles = navigator.canShare && navigator.canShare({ files: [file] });
+        console.log('6. canShare({ files }) 결과:', canShareFiles);
+
+        if (navigator.share && canShareFiles) {
+          console.log('7. 파일 공유 시도');
           await navigator.share({
             title: '귀여운 MBTI 테스트 결과',
             text: 'moahub.co.kr',
             files: [file]
           });
+          console.log('8. 파일 공유 성공!');
           return;
         }
       } catch (shareErr) {
+        console.log('파일 공유 에러:', shareErr);
         if ((shareErr as Error).name === 'AbortError') return;
-        console.log('파일 공유 실패, 다른 방법 시도:', shareErr);
       }
 
       // 2. 클립보드에 이미지 복사 (데스크톱 크롬 등)
+      console.log('9. 클립보드 복사 시도');
       try {
         await navigator.clipboard.write([
           new ClipboardItem({
@@ -162,6 +173,7 @@ const Result: React.FC<ResultProps> = ({ mbtiType, onRestart }) => {
       }
 
       // 3. 이미지 다운로드 폴백
+      console.log('10. 이미지 다운로드 시도');
       try {
         downloadImage(blob);
         alert('✅ 이미지가 저장되었습니다!\n\n갤러리에서 확인하고 공유해보세요! 🎉');
@@ -171,6 +183,8 @@ const Result: React.FC<ResultProps> = ({ mbtiType, onRestart }) => {
       }
 
       // 4. 텍스트로 폴백
+      console.log('11. 텍스트 공유로 폴백');
+      const shareText = `${result.emoji} 나의 MBTI는 "${result.type} - ${result.title}"!\n\n${selectedPromo}\n👉 moahub.co.kr`;
       if (navigator.share) {
         try {
           await navigator.share({
@@ -189,7 +203,7 @@ const Result: React.FC<ResultProps> = ({ mbtiType, onRestart }) => {
       }
 
     } catch (error) {
-      console.error('이미지 생성 실패:', error);
+      console.error('전체 에러:', error);
       alert('이미지 생성에 실패했습니다. 다시 시도해주세요.');
     } finally {
       setIsCapturing(false);
