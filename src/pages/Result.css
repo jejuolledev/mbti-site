@@ -241,6 +241,7 @@
   animation: fadeIn 1.2s ease-out;
 }
 
+.screenshot-share-button,
 .share-button,
 .download-button,
 .restart-button {
@@ -251,6 +252,21 @@
   transition: var(--transition);
   flex: 1;
   min-width: 200px;
+  border: none;
+  cursor: pointer;
+}
+
+.screenshot-share-button {
+  background: linear-gradient(135deg, #FF6B9D 0%, #C44569 100%);
+  color: white;
+  width: 100%;
+  padding: 18px 30px;
+  font-size: 1.1rem;
+}
+
+.screenshot-share-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .share-button {
@@ -268,6 +284,7 @@
   color: white;
 }
 
+.screenshot-share-button:hover:not(:disabled),
 .share-button:hover,
 .download-button:hover,
 .restart-button:hover {
@@ -305,6 +322,7 @@
     flex-direction: column;
   }
 
+  .screenshot-share-button,
   .share-button,
   .download-button,
   .restart-button {
