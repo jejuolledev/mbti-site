@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import html2canvas from 'html2canvas';
 import { mbtiResults } from '../data/results';
 import { MBTIResult } from '../types';
@@ -13,7 +13,9 @@ const Result: React.FC<ResultProps> = ({ mbtiType, onRestart }) => {
   const result: MBTIResult = mbtiResults[mbtiType];
   const [copied, setCopied] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
-  const resultCardRef = useRef<HTMLDivElement>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [isGeneratingPreview, setIsGeneratingPreview] = useState(false);
+  const captureAreaRef = useRef<HTMLDivElement>(null);
 
   // 홍보 문구 랜덤 선택
   const promoTexts = [
@@ -24,34 +26,39 @@ const Result: React.FC<ResultProps> = ({ mbtiType, onRestart }) => {
     "🌟 3분만에 알아보는 내 성격!",
   ];
 
-  const handleScreenshotShare = async () => {
-    if (!resultCardRef.current || isCapturing) return;
+  // 랜덤 홍보 문구 고정 (컴포넌트 마운트 시 결정)
+  const [selectedPromo] = useState(() => promoTexts[Math.floor(Math.random() * promoTexts.length)]);
 
-    setIsCapturing(true);
+  // 이미지 생성 함수 (캡처 영역만)
+  const generateShareImage = async (): Promise<{ blob: Blob; dataUrl: string } | null> => {
+    if (!captureAreaRef.current) return null;
 
     try {
-      // 결과 카드 캡처
-      const canvas = await html2canvas(resultCardRef.current, {
-        backgroundColor: '#FFF5F7',
+      // 결과 카드 캡처 (버튼 제외)
+      const canvas = await html2canvas(captureAreaRef.current, {
+        backgroundColor: '#FFFFFF',
         scale: 2, // 고해상도
         useCORS: true,
         allowTaint: true,
         logging: false,
+        // Safari 호환성을 위한 설정
+        foreignObjectRendering: false,
+        removeContainer: true,
       });
 
       // 홍보 문구 추가를 위한 새 캔버스
       const finalCanvas = document.createElement('canvas');
-      const promoHeight = 120;
+      const promoHeight = 140;
       finalCanvas.width = canvas.width;
       finalCanvas.height = canvas.height + promoHeight;
 
       const ctx = finalCanvas.getContext('2d');
-      if (!ctx) return;
+      if (!ctx) return null;
 
       // 기존 캡처 이미지 그리기
       ctx.drawImage(canvas, 0, 0);
 
-      // 하단 홍보 영역 배경
+      // 하단 홍보 영역 배경 (그라데이션)
       const gradient = ctx.createLinearGradient(0, canvas.height, 0, finalCanvas.height);
       gradient.addColorStop(0, '#FF6B9D');
       gradient.addColorStop(1, '#C44569');
@@ -59,26 +66,63 @@ const Result: React.FC<ResultProps> = ({ mbtiType, onRestart }) => {
       ctx.fillRect(0, canvas.height, finalCanvas.width, promoHeight);
 
       // 홍보 문구
-      const randomPromo = promoTexts[Math.floor(Math.random() * promoTexts.length)];
       ctx.fillStyle = 'white';
-      ctx.font = 'bold 36px -apple-system, BlinkMacSystemFont, sans-serif';
+      ctx.font = 'bold 40px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(randomPromo, finalCanvas.width / 2, canvas.height + 50);
+      ctx.fillText(selectedPromo, finalCanvas.width / 2, canvas.height + 55);
 
       // URL
-      ctx.font = 'bold 32px -apple-system, BlinkMacSystemFont, sans-serif';
-      ctx.fillText('👉 moahub.co.kr', finalCanvas.width / 2, canvas.height + 95);
+      ctx.font = 'bold 36px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.fillText('👉 moahub.co.kr', finalCanvas.width / 2, canvas.height + 110);
 
-      // Blob 생성
+      // Blob 및 DataURL 생성
       const blob = await new Promise<Blob | null>((resolve) => {
         finalCanvas.toBlob(resolve, 'image/png', 1.0);
       });
 
-      if (!blob) throw new Error('이미지 생성 실패');
+      if (!blob) return null;
 
+      const dataUrl = finalCanvas.toDataURL('image/png');
+      return { blob, dataUrl };
+    } catch (error) {
+      console.error('이미지 생성 실패:', error);
+      return null;
+    }
+  };
+
+  // 미리보기 이미지 자동 생성 (결과 로드 후)
+  useEffect(() => {
+    const generatePreview = async () => {
+      // 약간의 딜레이 후 미리보기 생성 (렌더링 완료 대기)
+      setIsGeneratingPreview(true);
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      const result = await generateShareImage();
+      if (result) {
+        setPreviewImage(result.dataUrl);
+      }
+      setIsGeneratingPreview(false);
+    };
+
+    generatePreview();
+  }, [mbtiType]); // mbtiType이 변경될 때마다 재생성
+
+  const handleScreenshotShare = async () => {
+    if (isCapturing) return;
+
+    setIsCapturing(true);
+
+    try {
+      // 이미지 생성
+      const imageResult = await generateShareImage();
+      if (!imageResult) {
+        throw new Error('이미지 생성 실패');
+      }
+
+      const { blob } = imageResult;
       const file = new File([blob], `mbti-${result.type}-result.png`, { type: 'image/png' });
 
-      const shareText = `${result.emoji} 나의 MBTI는 "${result.type} - ${result.title}"!\n\n${randomPromo}\n👉 moahub.co.kr`;
+      const shareText = `${result.emoji} 나의 MBTI는 "${result.type} - ${result.title}"!\n\n${selectedPromo}\n👉 moahub.co.kr`;
 
       // Web Share API 지원 확인 (Safari, Chrome 모두 지원)
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
@@ -189,84 +233,114 @@ const Result: React.FC<ResultProps> = ({ mbtiType, onRestart }) => {
 
   return (
     <div className="result-container">
-      <div className="result-card" ref={resultCardRef}>
-        <div className="confetti">
-          {[...Array(50)].map((_, i) => (
-            <div key={i} className="confetti-piece" style={{
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 3}s`,
-              animationDuration: `${2 + Math.random() * 2}s`
-            }}></div>
-          ))}
-        </div>
+      {/* Confetti 애니메이션 (캡처 영역 밖) */}
+      <div className="confetti">
+        {[...Array(50)].map((_, i) => (
+          <div key={i} className="confetti-piece" style={{
+            left: `${Math.random() * 100}%`,
+            animationDelay: `${Math.random() * 3}s`,
+            animationDuration: `${2 + Math.random() * 2}s`
+          }}></div>
+        ))}
+      </div>
 
-        <div className="result-header">
-          <h1 className="result-announcement">🎉 당신은...</h1>
-          <div className="result-type-badge" style={{ background: result.color }}>
-            <span className="result-emoji">{result.emoji}</span>
-            <span className="result-type">{result.type}</span>
+      <div className="result-card">
+        {/* 캡처 영역 - 버튼 제외 */}
+        <div className="capture-area" ref={captureAreaRef}>
+          <div className="result-header">
+            <h1 className="result-announcement">🎉 당신은...</h1>
+            <div className="result-type-badge" style={{ background: result.color }}>
+              <span className="result-emoji">{result.emoji}</span>
+              <span className="result-type">{result.type}</span>
+            </div>
+            <h2 className="result-title">{result.title}</h2>
+            <p className="result-description">{result.description}</p>
           </div>
-          <h2 className="result-title">{result.title}</h2>
-          <p className="result-description">{result.description}</p>
-        </div>
 
-        <div className="result-section">
-          <h3 className="section-title">✨ 주요 특징</h3>
-          <div className="characteristics-grid">
-            {result.characteristics.map((char, index) => (
-              <div key={index} className="characteristic-item">
-                <span className="check-icon">✓</span>
-                {char}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="result-section">
-          <h3 className="section-title">💪 강점</h3>
-          <div className="tags-container">
-            {result.strengths.map((strength, index) => (
-              <span key={index} className="tag strength-tag">
-                {strength}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <div className="result-section">
-          <h3 className="section-title">📌 약점</h3>
-          <div className="tags-container">
-            {result.weaknesses.map((weakness, index) => (
-              <span key={index} className="tag weakness-tag">
-                {weakness}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <div className="result-section">
-          <h3 className="section-title">💕 잘 맞는 유형</h3>
-          <div className="compatibility-list">
-            {result.compatibility.map((type, index) => {
-              const compatResult = mbtiResults[type];
-              return (
-                <div key={index} className="compatibility-item">
-                  <span className="compat-emoji">{compatResult.emoji}</span>
-                  <span className="compat-type">{type}</span>
-                  <span className="compat-title">{compatResult.title}</span>
+          <div className="result-section">
+            <h3 className="section-title">✨ 주요 특징</h3>
+            <div className="characteristics-grid">
+              {result.characteristics.map((char, index) => (
+                <div key={index} className="characteristic-item">
+                  <span className="check-icon">✓</span>
+                  {char}
                 </div>
-              );
-            })}
+              ))}
+            </div>
           </div>
+
+          <div className="result-section">
+            <h3 className="section-title">💪 강점</h3>
+            <div className="tags-container">
+              {result.strengths.map((strength, index) => (
+                <span key={index} className="tag strength-tag">
+                  {strength}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="result-section">
+            <h3 className="section-title">📌 약점</h3>
+            <div className="tags-container">
+              {result.weaknesses.map((weakness, index) => (
+                <span key={index} className="tag weakness-tag">
+                  {weakness}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="result-section">
+            <h3 className="section-title">💕 잘 맞는 유형</h3>
+            <div className="compatibility-list">
+              {result.compatibility.map((type, index) => {
+                const compatResult = mbtiResults[type];
+                return (
+                  <div key={index} className="compatibility-item">
+                    <span className="compat-emoji">{compatResult.emoji}</span>
+                    <span className="compat-type">{type}</span>
+                    <span className="compat-title">{compatResult.title}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* 공유 이미지 미리보기 */}
+        <div className="share-preview-section">
+          <h3 className="preview-title">📷 공유할 이미지 미리보기</h3>
+          <div className="preview-container">
+            {isGeneratingPreview ? (
+              <div className="preview-loading">
+                <div className="preview-spinner"></div>
+                <p>이미지 생성 중...</p>
+              </div>
+            ) : previewImage ? (
+              <img
+                src={previewImage}
+                alt="공유 이미지 미리보기"
+                className="preview-image"
+              />
+            ) : (
+              <div className="preview-placeholder">
+                <p>이미지를 불러오는 중...</p>
+              </div>
+            )}
+          </div>
+          <p className="preview-description">
+            위 이미지가 친구들에게 공유됩니다! 🎉
+          </p>
         </div>
 
         <div className="action-buttons">
           <button
             className="screenshot-share-button"
             onClick={handleScreenshotShare}
-            disabled={isCapturing}
+            disabled={isCapturing || isGeneratingPreview}
           >
-            {isCapturing ? '캡처 중... 📷' : copied ? '복사 완료! ✓' : '결과 이미지로 공유하기 📸'}
+            {isCapturing ? '공유 준비 중... 📷' : copied ? '복사 완료! ✓' : '이미지로 공유하기 📸'}
           </button>
           <button className="share-button" onClick={handleShare}>
             텍스트로 공유하기 🔗
