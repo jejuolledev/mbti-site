@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import html2canvas from 'html2canvas';
 import { mbtiResults } from '../data/results';
 import { MBTIResult } from '../types';
@@ -15,6 +15,7 @@ const Result: React.FC<ResultProps> = ({ mbtiType, onRestart }) => {
   const [isCapturing, setIsCapturing] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [isGeneratingPreview, setIsGeneratingPreview] = useState(false);
+  const [currentBlob, setCurrentBlob] = useState<Blob | null>(null);
   const captureAreaRef = useRef<HTMLDivElement>(null);
 
   // 홍보 문구 랜덤 선택
@@ -30,8 +31,11 @@ const Result: React.FC<ResultProps> = ({ mbtiType, onRestart }) => {
   const [selectedPromo] = useState(() => promoTexts[Math.floor(Math.random() * promoTexts.length)]);
 
   // 이미지 생성 함수 (캡처 영역만)
-  const generateShareImage = async (): Promise<{ blob: Blob; dataUrl: string } | null> => {
-    if (!captureAreaRef.current) return null;
+  const generateShareImage = useCallback(async (): Promise<{ blob: Blob; dataUrl: string } | null> => {
+    if (!captureAreaRef.current) {
+      console.error('캡처 영역을 찾을 수 없습니다');
+      return null;
+    }
 
     try {
       // 결과 카드 캡처 (버튼 제외)
@@ -44,6 +48,8 @@ const Result: React.FC<ResultProps> = ({ mbtiType, onRestart }) => {
         // Safari 호환성을 위한 설정
         foreignObjectRendering: false,
         removeContainer: true,
+        windowWidth: captureAreaRef.current.scrollWidth,
+        windowHeight: captureAreaRef.current.scrollHeight,
       });
 
       // 홍보 문구 추가를 위한 새 캔버스
@@ -53,7 +59,10 @@ const Result: React.FC<ResultProps> = ({ mbtiType, onRestart }) => {
       finalCanvas.height = canvas.height + promoHeight;
 
       const ctx = finalCanvas.getContext('2d');
-      if (!ctx) return null;
+      if (!ctx) {
+        console.error('Canvas context를 가져올 수 없습니다');
+        return null;
+      }
 
       // 기존 캡처 이미지 그리기
       ctx.drawImage(canvas, 0, 0);
@@ -80,7 +89,10 @@ const Result: React.FC<ResultProps> = ({ mbtiType, onRestart }) => {
         finalCanvas.toBlob(resolve, 'image/png', 1.0);
       });
 
-      if (!blob) return null;
+      if (!blob) {
+        console.error('Blob 생성 실패');
+        return null;
+      }
 
       const dataUrl = finalCanvas.toDataURL('image/png');
       return { blob, dataUrl };
@@ -88,24 +100,36 @@ const Result: React.FC<ResultProps> = ({ mbtiType, onRestart }) => {
       console.error('이미지 생성 실패:', error);
       return null;
     }
-  };
+  }, [selectedPromo]);
 
   // 미리보기 이미지 자동 생성 (결과 로드 후)
   useEffect(() => {
     const generatePreview = async () => {
       // 약간의 딜레이 후 미리보기 생성 (렌더링 완료 대기)
       setIsGeneratingPreview(true);
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 800));
 
-      const result = await generateShareImage();
-      if (result) {
-        setPreviewImage(result.dataUrl);
+      const imageResult = await generateShareImage();
+      if (imageResult) {
+        setPreviewImage(imageResult.dataUrl);
+        setCurrentBlob(imageResult.blob);
       }
       setIsGeneratingPreview(false);
     };
 
     generatePreview();
-  }, [mbtiType]); // mbtiType이 변경될 때마다 재생성
+  }, [mbtiType, generateShareImage]);
+
+  const downloadImage = useCallback((blob: Blob) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `mbti-${result.type}-result.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, [result.type]);
 
   const handleScreenshotShare = async () => {
     if (isCapturing) return;
@@ -113,36 +137,54 @@ const Result: React.FC<ResultProps> = ({ mbtiType, onRestart }) => {
     setIsCapturing(true);
 
     try {
-      // 이미지 생성
-      const imageResult = await generateShareImage();
-      if (!imageResult) {
-        throw new Error('이미지 생성 실패');
+      // 이미 생성된 이미지 사용 또는 새로 생성
+      let blob = currentBlob;
+      if (!blob) {
+        const imageResult = await generateShareImage();
+        if (!imageResult) {
+          throw new Error('이미지 생성 실패');
+        }
+        blob = imageResult.blob;
       }
 
-      const { blob } = imageResult;
       const file = new File([blob], `mbti-${result.type}-result.png`, { type: 'image/png' });
-
       const shareText = `${result.emoji} 나의 MBTI는 "${result.type} - ${result.title}"!\n\n${selectedPromo}\n👉 moahub.co.kr`;
 
-      // Web Share API 지원 확인 (Safari, Chrome 모두 지원)
-      if (navigator.share && navigator.canShare?.({ files: [file] })) {
-        await navigator.share({
-          title: '귀여운 MBTI 테스트 결과',
-          text: shareText,
-          files: [file],
-        });
-      } else if (navigator.share) {
-        // 파일 공유 미지원 시 텍스트만 공유
-        await navigator.share({
-          title: '귀여운 MBTI 테스트 결과',
-          text: shareText,
-          url: 'https://moahub.co.kr',
-        });
-        // 이미지는 별도 다운로드
-        downloadImage(blob);
+      // Web Share API로 파일 공유 시도
+      const canShareFiles = navigator.canShare?.({ files: [file] });
+
+      if (navigator.share && canShareFiles) {
+        try {
+          await navigator.share({
+            title: '귀여운 MBTI 테스트 결과',
+            text: shareText,
+            files: [file],
+          });
+          return; // 성공시 종료
+        } catch (shareError) {
+          // 파일 공유 실패 시 다른 방법 시도
+          console.log('파일 공유 실패, 대체 방법 시도:', shareError);
+        }
+      }
+
+      // 파일 공유 실패 시: 이미지 다운로드 + 텍스트 공유
+      downloadImage(blob);
+
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: '귀여운 MBTI 테스트 결과',
+            text: shareText + '\n\n(이미지가 다운로드 되었어요! 함께 공유해주세요)',
+            url: 'https://moahub.co.kr',
+          });
+        } catch {
+          // 텍스트 공유도 실패시 클립보드 복사
+          await navigator.clipboard.writeText(shareText);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 3000);
+        }
       } else {
-        // Web Share API 미지원 시 이미지 다운로드 + 텍스트 복사
-        downloadImage(blob);
+        // Web Share API 미지원 시 클립보드 복사
         await navigator.clipboard.writeText(shareText);
         setCopied(true);
         setTimeout(() => setCopied(false), 3000);
@@ -151,20 +193,17 @@ const Result: React.FC<ResultProps> = ({ mbtiType, onRestart }) => {
       // 사용자가 공유 취소한 경우는 무시
       if ((error as Error).name !== 'AbortError') {
         console.error('공유 실패:', error);
-        alert('공유에 실패했어요. 다시 시도해주세요!');
+        // 최후의 수단: 이미지 다운로드만이라도 시도
+        if (currentBlob) {
+          downloadImage(currentBlob);
+          alert('이미지가 다운로드 되었어요! 직접 공유해주세요 😊');
+        } else {
+          alert('공유에 실패했어요. 다시 시도해주세요!');
+        }
       }
     } finally {
       setIsCapturing(false);
     }
-  };
-
-  const downloadImage = (blob: Blob) => {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `mbti-${result.type}-result.png`;
-    a.click();
-    URL.revokeObjectURL(url);
   };
 
   const handleShare = () => {
