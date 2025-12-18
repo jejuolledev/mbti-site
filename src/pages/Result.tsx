@@ -15,7 +15,6 @@ const Result: React.FC<ResultProps> = ({ mbtiType, onRestart }) => {
   const [isCapturing, setIsCapturing] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [isGeneratingPreview, setIsGeneratingPreview] = useState(false);
-  const [currentBlob, setCurrentBlob] = useState<Blob | null>(null);
   const captureAreaRef = useRef<HTMLDivElement>(null);
 
   // 홍보 문구 랜덤 선택
@@ -30,7 +29,7 @@ const Result: React.FC<ResultProps> = ({ mbtiType, onRestart }) => {
   // 랜덤 홍보 문구 고정 (컴포넌트 마운트 시 결정)
   const [selectedPromo] = useState(() => promoTexts[Math.floor(Math.random() * promoTexts.length)]);
 
-  // 이미지 생성 함수 (캡처 영역만)
+  // 이미지 생성 함수 (ai-level-test 방식 적용)
   const generateShareImage = useCallback(async (): Promise<{ blob: Blob; dataUrl: string } | null> => {
     if (!captureAreaRef.current) {
       console.error('캡처 영역을 찾을 수 없습니다');
@@ -38,55 +37,43 @@ const Result: React.FC<ResultProps> = ({ mbtiType, onRestart }) => {
     }
 
     try {
-      // 결과 카드 캡처 (버튼 제외)
-      const canvas = await html2canvas(captureAreaRef.current, {
-        backgroundColor: '#FFFFFF',
-        scale: 2, // 고해상도
-        useCORS: true,
-        allowTaint: true,
+      const element = captureAreaRef.current;
+
+      // 하단에 URL 오버레이 추가
+      const urlOverlay = document.createElement('div');
+      urlOverlay.style.cssText = `
+        text-align: center;
+        padding: 20px;
+        background: linear-gradient(135deg, #FF6B9D 0%, #C44569 100%);
+        color: white;
+        font-weight: bold;
+        font-size: 18px;
+        border-radius: 0 0 20px 20px;
+        margin-top: 10px;
+      `;
+      urlOverlay.innerHTML = `${selectedPromo}<br>👉 moahub.co.kr`;
+      element.appendChild(urlOverlay);
+
+      // Safari fix: 스크롤 위치 저장 후 최상단으로 이동
+      const originalScrollPos = window.scrollY;
+      window.scrollTo(0, 0);
+
+      // html2canvas로 캡처 (ai-level-test와 동일한 옵션)
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        backgroundColor: '#ffffff',
         logging: false,
-        // Safari 호환성을 위한 설정
-        foreignObjectRendering: false,
-        removeContainer: true,
-        windowWidth: captureAreaRef.current.scrollWidth,
-        windowHeight: captureAreaRef.current.scrollHeight,
+        useCORS: true,
+        allowTaint: true
       });
 
-      // 홍보 문구 추가를 위한 새 캔버스
-      const finalCanvas = document.createElement('canvas');
-      const promoHeight = 140;
-      finalCanvas.width = canvas.width;
-      finalCanvas.height = canvas.height + promoHeight;
+      // 스크롤 위치 복원 및 오버레이 제거
+      window.scrollTo(0, originalScrollPos);
+      urlOverlay.remove();
 
-      const ctx = finalCanvas.getContext('2d');
-      if (!ctx) {
-        console.error('Canvas context를 가져올 수 없습니다');
-        return null;
-      }
-
-      // 기존 캡처 이미지 그리기
-      ctx.drawImage(canvas, 0, 0);
-
-      // 하단 홍보 영역 배경 (그라데이션)
-      const gradient = ctx.createLinearGradient(0, canvas.height, 0, finalCanvas.height);
-      gradient.addColorStop(0, '#FF6B9D');
-      gradient.addColorStop(1, '#C44569');
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, canvas.height, finalCanvas.width, promoHeight);
-
-      // 홍보 문구
-      ctx.fillStyle = 'white';
-      ctx.font = 'bold 40px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(selectedPromo, finalCanvas.width / 2, canvas.height + 55);
-
-      // URL
-      ctx.font = 'bold 36px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-      ctx.fillText('👉 moahub.co.kr', finalCanvas.width / 2, canvas.height + 110);
-
-      // Blob 및 DataURL 생성
+      // Blob 생성
       const blob = await new Promise<Blob | null>((resolve) => {
-        finalCanvas.toBlob(resolve, 'image/png', 1.0);
+        canvas.toBlob(resolve, 'image/png');
       });
 
       if (!blob) {
@@ -94,7 +81,7 @@ const Result: React.FC<ResultProps> = ({ mbtiType, onRestart }) => {
         return null;
       }
 
-      const dataUrl = finalCanvas.toDataURL('image/png');
+      const dataUrl = canvas.toDataURL('image/png');
       return { blob, dataUrl };
     } catch (error) {
       console.error('이미지 생성 실패:', error);
@@ -112,7 +99,6 @@ const Result: React.FC<ResultProps> = ({ mbtiType, onRestart }) => {
       const imageResult = await generateShareImage();
       if (imageResult) {
         setPreviewImage(imageResult.dataUrl);
-        setCurrentBlob(imageResult.blob);
       }
       setIsGeneratingPreview(false);
     };
@@ -131,76 +117,80 @@ const Result: React.FC<ResultProps> = ({ mbtiType, onRestart }) => {
     URL.revokeObjectURL(url);
   }, [result.type]);
 
+  // ai-level-test 방식의 공유 함수
   const handleScreenshotShare = async () => {
     if (isCapturing) return;
-
     setIsCapturing(true);
 
     try {
-      // 이미 생성된 이미지 사용 또는 새로 생성
-      let blob = currentBlob;
-      if (!blob) {
-        const imageResult = await generateShareImage();
-        if (!imageResult) {
-          throw new Error('이미지 생성 실패');
-        }
-        blob = imageResult.blob;
+      // 이미지 생성
+      const imageResult = await generateShareImage();
+      if (!imageResult) {
+        throw new Error('이미지 생성 실패');
       }
 
+      const { blob } = imageResult;
       const file = new File([blob], `mbti-${result.type}-result.png`, { type: 'image/png' });
       const shareText = `${result.emoji} 나의 MBTI는 "${result.type} - ${result.title}"!\n\n${selectedPromo}\n👉 moahub.co.kr`;
 
-      // Web Share API로 파일 공유 시도
-      const canShareFiles = navigator.canShare?.({ files: [file] });
-
-      if (navigator.share && canShareFiles) {
-        try {
+      // 1. Web Share API 파일 공유 시도 (모바일 사파리, 안드로이드 크롬)
+      try {
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
           await navigator.share({
             title: '귀여운 MBTI 테스트 결과',
-            text: shareText,
-            files: [file],
+            text: 'moahub.co.kr',
+            files: [file]
           });
-          return; // 성공시 종료
-        } catch (shareError) {
-          // 파일 공유 실패 시 다른 방법 시도
-          console.log('파일 공유 실패, 대체 방법 시도:', shareError);
+          return;
         }
+      } catch (shareErr) {
+        if ((shareErr as Error).name === 'AbortError') return;
+        console.log('파일 공유 실패, 다른 방법 시도:', shareErr);
       }
 
-      // 파일 공유 실패 시: 이미지 다운로드 + 텍스트 공유
-      downloadImage(blob);
+      // 2. 클립보드에 이미지 복사 (데스크톱 크롬 등)
+      try {
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            'image/png': blob
+          })
+        ]);
+        alert('✅ 이미지가 클립보드에 복사되었습니다!\n\nCtrl+V (또는 Cmd+V)로 붙여넣기 하세요! 🎉');
+        return;
+      } catch (clipboardErr) {
+        console.log('클립보드 복사 실패:', clipboardErr);
+      }
 
+      // 3. 이미지 다운로드 폴백
+      try {
+        downloadImage(blob);
+        alert('✅ 이미지가 저장되었습니다!\n\n갤러리에서 확인하고 공유해보세요! 🎉');
+        return;
+      } catch (downloadErr) {
+        console.log('이미지 다운로드 실패:', downloadErr);
+      }
+
+      // 4. 텍스트로 폴백
       if (navigator.share) {
         try {
           await navigator.share({
             title: '귀여운 MBTI 테스트 결과',
-            text: shareText + '\n\n(이미지가 다운로드 되었어요! 함께 공유해주세요)',
-            url: 'https://moahub.co.kr',
+            text: shareText
           });
-        } catch {
-          // 텍스트 공유도 실패시 클립보드 복사
-          await navigator.clipboard.writeText(shareText);
-          setCopied(true);
-          setTimeout(() => setCopied(false), 3000);
+        } catch (textShareErr) {
+          if ((textShareErr as Error).name !== 'AbortError') {
+            await navigator.clipboard.writeText(shareText);
+            alert('텍스트가 클립보드에 복사되었습니다! 🎉');
+          }
         }
       } else {
-        // Web Share API 미지원 시 클립보드 복사
         await navigator.clipboard.writeText(shareText);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 3000);
+        alert('텍스트가 클립보드에 복사되었습니다! 🎉');
       }
+
     } catch (error) {
-      // 사용자가 공유 취소한 경우는 무시
-      if ((error as Error).name !== 'AbortError') {
-        console.error('공유 실패:', error);
-        // 최후의 수단: 이미지 다운로드만이라도 시도
-        if (currentBlob) {
-          downloadImage(currentBlob);
-          alert('이미지가 다운로드 되었어요! 직접 공유해주세요 😊');
-        } else {
-          alert('공유에 실패했어요. 다시 시도해주세요!');
-        }
-      }
+      console.error('이미지 생성 실패:', error);
+      alert('이미지 생성에 실패했습니다. 다시 시도해주세요.');
     } finally {
       setIsCapturing(false);
     }
