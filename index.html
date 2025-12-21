@@ -1074,10 +1074,174 @@
                 font-size: 0.85rem;
             }
         }
+
+        /* ========================================
+           캡처 전용 영역 스타일 (공유하기용)
+           ======================================== */
+        .capture-area {
+            position: fixed;
+            left: -9999px;
+            top: 0;
+            width: 400px;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 50%, #FF6B9D 100%);
+            border-radius: 24px;
+            z-index: -1;
+            visibility: hidden;
+            overflow: visible;
+        }
+
+        .capture-card {
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .capture-logo {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+        }
+
+        .capture-emoji {
+            font-size: 3.5rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .capture-type {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 0.2rem;
+        }
+
+        .capture-title {
+            font-size: 1.2rem;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .capture-description {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+
+        .capture-scores {
+            background: #FFF5F7;
+            padding: 0.8rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+
+        .capture-score-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin-bottom: 0.3rem;
+            color: var(--text-dark);
+        }
+
+        .capture-score-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .capture-section {
+            background: #FFF5F7;
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            margin-bottom: 0.6rem;
+            text-align: left;
+        }
+
+        .capture-section-title {
+            color: var(--secondary);
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+        }
+
+        .capture-section-content {
+            color: #333;
+            font-size: 0.8rem;
+            line-height: 1.5;
+        }
+
+        .capture-promo {
+            background: linear-gradient(135deg, #FF6B9D 0%, #C44569 100%);
+            padding: 1rem;
+            border-radius: 16px;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .capture-promo p {
+            color: white;
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .capture-promo .capture-url {
+            font-size: 0.85rem;
+            font-weight: 600;
+            opacity: 0.9;
+            margin-top: 0.3rem;
+        }
     </style>
+    <!-- html2canvas 라이브러리 -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 
 <body>
+    <!-- MBTI 결과 캡처용 숨겨진 영역 -->
+    <div class="capture-area" id="captureArea">
+        <div class="capture-card">
+            <div class="capture-logo">🎨 귀여운 MBTI 테스트</div>
+            <div class="capture-emoji" id="captureEmoji"></div>
+            <div class="capture-type" id="captureType"></div>
+            <div class="capture-title" id="captureTitle"></div>
+            <p class="capture-description" id="captureDescription"></p>
+
+            <div class="capture-scores" id="captureScores">
+                <div class="capture-score-row">
+                    <span>외향(E)</span>
+                    <span id="captureEI"></span>
+                    <span>내향(I)</span>
+                </div>
+                <div class="capture-score-row">
+                    <span>감각(S)</span>
+                    <span id="captureSN"></span>
+                    <span>직관(N)</span>
+                </div>
+                <div class="capture-score-row">
+                    <span>사고(T)</span>
+                    <span id="captureTF"></span>
+                    <span>감정(F)</span>
+                </div>
+                <div class="capture-score-row">
+                    <span>판단(J)</span>
+                    <span id="captureJP"></span>
+                    <span>인식(P)</span>
+                </div>
+            </div>
+
+            <div class="capture-section">
+                <div class="capture-section-title">✨ 주요 특징</div>
+                <div class="capture-section-content" id="captureCharacteristics"></div>
+            </div>
+
+            <div class="capture-promo">
+                <p>✨ 더 많은 콘텐츠는 moahub.co.kr 에서!</p>
+                <p class="capture-url">https://moahub.co.kr</p>
+            </div>
+        </div>
+    </div>
+
     <div id="app">
         <!-- 크롤러용 정적 fallback 콘텐츠 (JavaScript 로딩 전 표시) -->
         <noscript>
@@ -1754,7 +1918,7 @@
 
                     <div class="action-buttons" style="margin-top: 40px;">
                         <button class="btn-secondary" onclick="shareResult('${mbtiType}')">
-                            공유하기 🔗
+                            📤 결과 공유하기
                         </button>
                         <button class="btn" onclick="restart()">
                             다시 테스트하기 🔄
@@ -1897,7 +2061,7 @@
 
                     <div class="action-buttons">
                         <button class="btn-secondary" onclick="shareResult('${mbtiType}')">
-                            공유하기 🔗
+                            📤 결과 공유하기
                         </button>
                         <button class="btn" onclick="restart()">
                             다시 테스트하기 🔄
@@ -1961,6 +2125,15 @@
                         btn.style.transform = 'none';
                     });
                 }, 50);
+            }
+
+            // 결과 페이지일 때 공유 이미지 사전 준비 (백그라운드)
+            if (currentPage === 'result') {
+                cachedShareData = null;
+                const mbtiType = calculateMBTI(answers);
+                setTimeout(() => {
+                    prepareShareData(mbtiType);
+                }, 500);
             }
         }
 
@@ -2092,27 +2265,190 @@
             render();
         }
 
-        function shareResult(mbtiType) {
+        // ============================================
+        // 공유하기 기능 (iOS Chrome/Safari 대응)
+        // ============================================
+
+        // 공유 데이터 캐시 (사전 준비용)
+        let cachedShareData = null;
+
+        // 공유 데이터 사전 준비 (prewarm)
+        async function prepareShareData(mbtiType) {
+            console.log('[share] prepareShareData starting...');
+
             const result = mbtiResults[mbtiType];
             const percentages = getPercentages();
-            const shareText = `나의 MBTI는 ${result.type} - ${result.title}! ${result.emoji}
+            const shareUrl = 'https://mbti.moahub.co.kr';
+            const shareText = `나의 MBTI는 ${result.type} - ${result.title}! ${result.emoji}\n\nE/I: ${percentages[mbtiType[0]]}% | S/N: ${percentages[mbtiType[1]]}%\nT/F: ${percentages[mbtiType[2]]}% | J/P: ${percentages[mbtiType[3]]}%\n\n나도 테스트하기 👉 ${shareUrl}`;
+            const shareTitle = '귀여운 MBTI 테스트 결과';
 
-E/I: ${percentages[mbtiType[0]]}%
-S/N: ${percentages[mbtiType[1]]}%
-T/F: ${percentages[mbtiType[2]]}%
-J/P: ${percentages[mbtiType[3]]}%
+            try {
+                // 캡처용 영역 데이터 채우기
+                document.getElementById('captureEmoji').textContent = result.emoji;
+                document.getElementById('captureType').textContent = result.type;
+                document.getElementById('captureTitle').textContent = result.title;
+                document.getElementById('captureDescription').textContent = result.description;
+                document.getElementById('captureEI').textContent = `${percentages.E}% : ${percentages.I}%`;
+                document.getElementById('captureSN').textContent = `${percentages.S}% : ${percentages.N}%`;
+                document.getElementById('captureTF').textContent = `${percentages.T}% : ${percentages.F}%`;
+                document.getElementById('captureJP').textContent = `${percentages.J}% : ${percentages.P}%`;
 
-귀여운 MBTI 테스트 (3점 척도 정밀 버전)`;
+                // 주요 특징 (처음 3개만)
+                const characteristics = result.characteristics.slice(0, 3).join(' • ');
+                document.getElementById('captureCharacteristics').textContent = characteristics;
 
-            if (navigator.share) {
-                navigator.share({
-                    title: '귀여운 MBTI 테스트',
-                    text: shareText
-                }).catch(() => { });
-            } else {
-                navigator.clipboard.writeText(shareText);
-                alert('결과가 클립보드에 복사되었습니다! 🎉');
+                // 캡처 영역 보이게 설정
+                const captureArea = document.getElementById('captureArea');
+                captureArea.style.visibility = 'visible';
+                captureArea.style.left = '0';
+                captureArea.style.top = '0';
+                captureArea.style.position = 'fixed';
+                captureArea.style.zIndex = '-1';
+
+                // requestAnimationFrame 2회로 최소 대기
+                await new Promise(resolve => {
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(resolve);
+                    });
+                });
+
+                // html2canvas로 캡처 (scale 1.5 - iOS 파일 크기 제한 대응)
+                const canvas = await html2canvas(captureArea, {
+                    backgroundColor: null,
+                    scale: 1.5,
+                    useCORS: true,
+                    allowTaint: false,
+                    logging: false,
+                    width: captureArea.offsetWidth,
+                    height: captureArea.offsetHeight,
+                    windowWidth: captureArea.offsetWidth,
+                    windowHeight: captureArea.offsetHeight
+                });
+
+                // 캡처 영역 다시 숨기기
+                captureArea.style.visibility = 'hidden';
+                captureArea.style.left = '-9999px';
+                captureArea.style.position = 'fixed';
+
+                // canvas를 JPEG blob으로 변환 (파일 크기 최적화)
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.85));
+                const file = new File([blob], 'mbti-result.jpg', { type: 'image/jpeg' });
+
+                console.log('[share] prewarm completed, file size:', file.size);
+
+                // 캐시에 저장
+                cachedShareData = {
+                    file: file,
+                    title: shareTitle,
+                    text: shareText,
+                    url: shareUrl
+                };
+
+            } catch (err) {
+                console.error('[share] prepareShareData failed:', err?.name, err?.message, err);
+                cachedShareData = {
+                    file: null,
+                    title: shareTitle,
+                    text: shareText,
+                    url: shareUrl
+                };
             }
+        }
+
+        // 결과 공유
+        async function shareResult(mbtiType) {
+            const ua = navigator.userAgent;
+            const isSafari = /Safari/.test(ua) && !/CriOS|FxiOS|Chrome/.test(ua);
+            const isIOSChrome = /CriOS/.test(ua);
+
+            console.log('[share] shareResult called');
+            console.log('[share] ua:', ua);
+            console.log('[share] isSafari:', isSafari, 'isIOSChrome:', isIOSChrome);
+
+            // 캐시된 데이터가 없으면 바로 준비
+            if (!cachedShareData) {
+                console.log('[share] No cached data, preparing now...');
+                await prepareShareData(mbtiType);
+            }
+
+            const shareUrl = cachedShareData?.url || 'https://mbti.moahub.co.kr';
+            const shareText = cachedShareData?.text || '';
+            const shareTitle = cachedShareData?.title || '귀여운 MBTI 테스트 결과';
+            const file = cachedShareData?.file;
+
+            console.log('[share] file exists:', !!file, 'size:', file?.size);
+
+            // Step A: 파일 공유 시도
+            if (file && navigator.share) {
+                const canShareFiles = navigator.canShare?.({ files: [file] });
+                console.log('[share] canShareFiles:', canShareFiles);
+
+                if (canShareFiles) {
+                    try {
+                        if (isIOSChrome) {
+                            // iOS Chrome: files-only 공유
+                            console.log('[share] iOS Chrome: attempting files-only share...');
+                            await navigator.share({ files: [file] });
+                            console.log('[share] iOS Chrome files-only share succeeded');
+                            return;
+                        } else if (isSafari) {
+                            // iOS Safari: files + 짧은 홍보 문구
+                            console.log('[share] Safari: attempting files + text share...');
+                            await navigator.share({
+                                files: [file],
+                                text: '✨ 더 많은 콘텐츠는 moahub.co.kr 에서!'
+                            });
+                            console.log('[share] Safari files+text share succeeded');
+                            return;
+                        } else {
+                            // 기타 브라우저: files + title + url
+                            console.log('[share] Other browser: attempting full share...');
+                            await navigator.share({
+                                files: [file],
+                                title: shareTitle,
+                                url: shareUrl
+                            });
+                            console.log('[share] Full share succeeded');
+                            return;
+                        }
+                    } catch (err) {
+                        console.error('[share] step A failed:', err?.name, err?.message, err);
+                        if (err.name === 'AbortError') return;
+                        // 실패 시 Step B로 진행
+                    }
+                }
+            }
+
+            // Step B: 텍스트/링크만 공유 시도
+            if (navigator.share) {
+                try {
+                    console.log('[share] attempting text-only share...');
+                    await navigator.share({
+                        title: shareTitle,
+                        text: shareText,
+                        url: shareUrl
+                    });
+                    console.log('[share] text-only share succeeded');
+                    return;
+                } catch (err) {
+                    console.error('[share] step B (text-only) failed:', err?.name, err?.message, err);
+                    if (err.name === 'AbortError') return;
+                }
+            }
+
+            // Step C: Fallback - 클립보드 복사
+            console.log('[share] falling back to clipboard...');
+            try {
+                await navigator.clipboard.writeText(shareUrl);
+                console.log('[share] clipboard copy succeeded');
+                alert('링크가 클립보드에 복사되었습니다!');
+                return;
+            } catch (clipErr) {
+                console.error('[share] step C (clipboard) failed:', clipErr?.name, clipErr?.message, clipErr);
+            }
+
+            // Step C-2: 마지막 fallback - prompt
+            prompt('아래 링크를 복사해서 공유해주세요!', shareUrl);
         }
 
         // Safari bfcache 방지
