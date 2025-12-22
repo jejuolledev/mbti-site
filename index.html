@@ -1854,20 +1854,7 @@
             const result = mbtiResults[mbtiType];
 
             if (!isPremium) {
-                const html = renderBasicResult(mbtiType, result);
-                // 렌더링 후 비동기로 광고 로드 호출
-                setTimeout(() => {
-                    if (window.adfit) {
-                        // 기존 광고 인스턴스 초기화 방지 및 재로딩
-                        const ads = document.querySelectorAll('.kakao_ad_area');
-                        ads.forEach(ad => {
-                            if (ad.getAttribute('data-ad-status') !== 'done') {
-                                window.adfit.display(ad.getAttribute('data-ad-unit'));
-                            }
-                        });
-                    }
-                }, 100);
-                return html;
+                return renderBasicResult(mbtiType, result);
             } else {
                 return renderPremiumResult(mbtiType, result);
             }
@@ -2146,8 +2133,24 @@
                 }, 50);
             }
 
-            // 결과 페이지일 때 공유 이미지 사전 준비 (백그라운드)
+            // 결과 페이지일 때 공유 이미지 사전 준비 및 광고 로드
             if (currentPage === 'result') {
+                // 1. 광고 로드
+                setTimeout(() => {
+                    if (window.adfit) {
+                        try {
+                            const ads = document.querySelectorAll('.kakao_ad_area');
+                            ads.forEach(ad => {
+                                // 이미 로드된 광고는 pass, 로드 안된 것만
+                                if (ad.style.display === 'none') {
+                                    window.adfit.display(ad.getAttribute('data-ad-unit'));
+                                }
+                            });
+                        } catch (e) { console.log('Ad load retry error', e); }
+                    }
+                }, 100);
+
+                // 2. 공유 데이터 프리워밍
                 cachedShareData = null;
                 const mbtiType = calculateMBTI(answers);
                 setTimeout(() => {
