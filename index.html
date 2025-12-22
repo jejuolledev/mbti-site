@@ -1854,7 +1854,20 @@
             const result = mbtiResults[mbtiType];
 
             if (!isPremium) {
-                return renderBasicResult(mbtiType, result);
+                const html = renderBasicResult(mbtiType, result);
+                // 렌더링 후 비동기로 광고 로드 호출
+                setTimeout(() => {
+                    if (window.adfit) {
+                        // 기존 광고 인스턴스 초기화 방지 및 재로딩
+                        const ads = document.querySelectorAll('.kakao_ad_area');
+                        ads.forEach(ad => {
+                            if (ad.getAttribute('data-ad-status') !== 'done') {
+                                window.adfit.display(ad.getAttribute('data-ad-unit'));
+                            }
+                        });
+                    }
+                }, 100);
+                return html;
             } else {
                 return renderPremiumResult(mbtiType, result);
             }
@@ -1913,6 +1926,13 @@
                         <button class="premium-unlock-btn" onclick="unlockPremium()">
                             상세 결과 보기
                         </button>
+
+                         <!-- KAKAO_ADFIT_START -->
+                        <div class="adfit-center adfit-center--cta-gap">
+                            <ins class="kakao_ad_area" style="display:none;" data-ad-unit="DAN-ZUtEWIJRDcHkQ4SQ"
+                                data-ad-width="320" data-ad-height="50"></ins>
+                        </div>
+                        <!-- KAKAO_ADFIT_END -->
                     </div>
 
                     <div class="action-buttons" style="margin-top: 40px;">
